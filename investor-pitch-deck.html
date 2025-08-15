@@ -454,6 +454,46 @@
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <style>
+        .simple-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .simple-nav:hover {
+            background: #fff;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .simple-nav svg {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+    
+    <a href="index.html" class="simple-nav">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        Home
+    </a>
+    
+
     <div class="deck-container">
         <!-- Slide 1: Title -->
         <div class="slide">
