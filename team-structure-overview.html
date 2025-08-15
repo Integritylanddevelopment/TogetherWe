@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherWe Clinical Organization Structure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .org-chart {
+            padding: 40px;
+        }
+
+        .level {
+            margin-bottom: 40px;
+        }
+
+        .level-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        .level-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .positions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .position {
+            background: white;
+            border: 2px solid #e8ecf4;
+            border-radius: 15px;
+            padding: 25px;
+            min-width: 280px;
+            max-width: 350px;
+            flex: 1;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .position:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .position.cco {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+        }
+
+        .position.clinical {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+        }
+
+        .position.medical {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
+        }
+
+        .position.crisis {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fffcf5 0%, #ffffff 100%);
+        }
+
+        .position.legal {
+            border-color: #9b59b6;
+            background: linear-gradient(135deg, #faf8ff 0%, #ffffff 100%);
+        }
+
+        .position.research {
+            border-color: #1abc9c;
+            background: linear-gradient(135deg, #f8fffd 0%, #ffffff 100%);
+        }
+
+        .role-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .credentials {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .responsibilities {
+            list-style: none;
+        }
+
+        .responsibilities li {
+            font-size: 0.95rem;
+            color: #34495e;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .responsibilities li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .priority {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #e74c3c;
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .reporting {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .reporting h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .reporting-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .reporting-line .arrow {
+            margin: 0 15px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .compensation {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+        }
+
+        .compensation h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .comp-structure {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .comp-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .comp-role {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .comp-amount {
+            color: #27ae60;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .org-chart {
+                padding: 20px;
+            }
+            
+            .positions {
+                flex-direction: column;
+            }
+            
+            .position {
+                min-width: auto;
+                max-width: none;
+                padding: 20px;
+            }
+            
+            .level-title {
+                font-size: 1.2rem;
+                margin-bottom: 20px;
+            }
+            
+            .role-title {
+                font-size: 1.1rem;
+            }
+            
+            .responsibilities li {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+            
+            .reporting {
+                margin-top: 20px;
+                padding: 15px;
+            }
+            
+            .reporting-line {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .reporting-line .arrow {
+                margin: 5px 0;
+                transform: rotate(90deg);
+            }
+            
+            .compensation {
+                margin-top: 20px;
+                padding: 15px;
+            }
+            
+            .comp-structure {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .comp-item {
+                padding: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .position {
+                padding: 15px;
+            }
+            
+            .role-title {
+                font-size: 1rem;
+            }
+            
+            .credentials {
+                font-size: 0.85rem;
+            }
+            
+            .responsibilities li {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TogetherWe Clinical Organization</h1>
+            <p>Professional Advisory Board & Medical Partnership Structure</p>
+        </div>
+
+        <div class="org-chart">
+            <!-- Level 1: Executive Clinical Leadership -->
+            <div class="level">
+                <div class="level-title">Executive Clinical Leadership</div>
+                <div class="positions">
+                    <div class="position cco">
+                        <div class="priority">URGENT</div>
+                        <div class="role-title">Chief Clinical Officer</div>
+                        <div class="credentials">LMFT, PhD in Clinical Psychology</div>
+                        <ul class="responsibilities">
+                            <li>Overall clinical strategy and protocols</li>
+                            <li>AI therapeutic response validation</li>
+                            <li>Crisis intervention oversight</li>
+                            <li>Professional standards compliance</li>
+                            <li>Clinical advisory board leadership</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 2: Core Clinical Specialists -->
+            <div class="level">
+                <div class="level-title">Core Clinical Advisory Board</div>
+                <div class="positions">
+                    <div class="position clinical">
+                        <div class="role-title">Lead Couples Therapist</div>
+                        <div class="credentials">LMFT, Gottman Method Certified</div>
+                        <ul class="responsibilities">
+                            <li>20-day onboarding question design</li>
+                            <li>Progressive disclosure protocols</li>
+                            <li>Attachment pattern validation</li>
+                            <li>Communication framework oversight</li>
+                        </ul>
+                    </div>
+
+                    <div class="position clinical">
+                        <div class="role-title">Trauma Specialist</div>
+                        <div class="credentials">LCSW, EMDR Certified, Trauma-Informed</div>
+                        <ul class="responsibilities">
+                            <li>Trauma response detection algorithms</li>
+                            <li>Safety protocol development</li>
+                            <li>Trigger pattern analysis</li>
+                            <li>PTSD screening integration</li>
+                        </ul>
+                    </div>
+
+                    <div class="position clinical">
+                        <div class="role-title">Sex & Intimacy Therapist</div>
+                        <div class="credentials">AASECT Certified, PhD Human Sexuality</div>
+                        <ul class="responsibilities">
+                            <li>Intimacy assessment frameworks</li>
+                            <li>Sexual health content review</li>
+                            <li>Couples sexuality patterns</li>
+                            <li>LGBTQ+ inclusive protocols</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 3: Medical & Crisis Support -->
+            <div class="level">
+                <div class="level-title">Medical & Crisis Intervention</div>
+                <div class="positions">
+                    <div class="position medical">
+                        <div class="role-title">Consulting Psychiatrist</div>
+                        <div class="credentials">MD, Board-Certified Psychiatry</div>
+                        <ul class="responsibilities">
+                            <li>Mental health screening protocols</li>
+                            <li>Medication management referrals</li>
+                            <li>Severe depression/anxiety detection</li>
+                            <li>Hospitalization criteria</li>
+                        </ul>
+                    </div>
+
+                    <div class="position crisis">
+                        <div class="priority">24/7</div>
+                        <div class="role-title">Crisis Intervention Team</div>
+                        <div class="credentials">Licensed Crisis Counselors (3-person team)</div>
+                        <ul class="responsibilities">
+                            <li>24/7 crisis hotline coverage</li>
+                            <li>Suicide risk assessment</li>
+                            <li>Emergency intervention protocols</li>
+                            <li>Law enforcement coordination</li>
+                        </ul>
+                    </div>
+
+                    <div class="position medical">
+                        <div class="role-title">Primary Care Liaison</div>
+                        <div class="credentials">MD Family Medicine</div>
+                        <ul class="responsibilities">
+                            <li>Holistic health integration</li>
+                            <li>Medical condition impacts</li>
+                            <li>Physician referral network</li>
+                            <li>Health screening protocols</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 4: Legal & Research Support -->
+            <div class="level">
+                <div class="level-title">Legal & Research Advisory</div>
+                <div class="positions">
+                    <div class="position legal">
+                        <div class="role-title">Healthcare Attorney</div>
+                        <div class="credentials">JD, HIPAA Compliance Specialist</div>
+                        <ul class="responsibilities">
+                            <li>HIPAA compliance oversight</li>
+                            <li>Professional liability protection</li>
+                            <li>State licensing requirements</li>
+                            <li>Risk management protocols</li>
+                        </ul>
+                    </div>
+
+                    <div class="position research">
+                        <div class="role-title">Clinical Research Director</div>
+                        <div class="credentials">PhD Psychology, Research Methods</div>
+                        <ul class="responsibilities">
+                            <li>Outcome measurement design</li>
+                            <li>Clinical validation studies</li>
+                            <li>Effectiveness research</li>
+                            <li>Academic partnerships</li>
+                        </ul>
+                    </div>
+
+                    <div class="position legal">
+                        <div class="role-title">Ethics Committee Chair</div>
+                        <div class="credentials">PhD Bioethics, Clinical Experience</div>
+                        <ul class="responsibilities">
+                            <li>AI ethics oversight</li>
+                            <li>Consent protocol review</li>
+                            <li>Privacy protection standards</li>
+                            <li>Vulnerable population safeguards</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reporting Structure -->
+            <div class="reporting">
+                <h3>Reporting Structure & Communication Flow</h3>
+                <div class="reporting-line">
+                    <span>CEO/CTO</span> <span class="arrow">→</span> <span><strong>Chief Clinical Officer</strong></span> <span class="arrow">→</span> <span>All Clinical Advisory Board</span>
+                </div>
+                <div class="reporting-line">
+                    <span>Crisis Team</span> <span class="arrow">→</span> <span>Direct CCO escalation</span> <span class="arrow">→</span> <span>CEO notification within 1 hour</span>
+                </div>
+                <div class="reporting-line">
+                    <span>Legal/Ethics</span> <span class="arrow">→</span> <span>CCO + CEO joint oversight</span>
+                </div>
+            </div>
+
+            <!-- Compensation Structure -->
+            <div class="compensation">
+                <h3>Advisory Compensation Structure</h3>
+                <div class="comp-structure">
+                    <div class="comp-item">
+                        <div class="comp-role">Chief Clinical Officer</div>
+                        <div class="comp-amount">$150K-200K + equity</div>
+                    </div>
+                    <div class="comp-item">
+                        <div class="comp-role">Core Specialists</div>
+                        <div class="comp-amount">$2K-5K/month + equity</div>
+                    </div>
+                    <div class="comp-item">
+                        <div class="comp-role">Crisis Team</div>
+                        <div class="comp-amount">$75-100/hour on-call</div>
+                    </div>
+                    <div class="comp-item">
+                        <div class="comp-role">Medical Advisors</div>
+                        <div class="comp-amount">$1K-3K/month retainer</div>
+                    </div>
+                    <div class="comp-item">
+                        <div class="comp-role">Legal/Research</div>
+                        <div class="comp-amount">$1K-2K/month + project fees</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

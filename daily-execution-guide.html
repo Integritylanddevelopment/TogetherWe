@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherWe Daily Execution Checklist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #4a5568 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #e3e8ee;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(26, 31, 54, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #64b5f6 0%, #81d4fa 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .calendar-widget {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .current-date {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .start-date {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .phase {
+            margin-bottom: 40px;
+        }
+
+        .phase-title {
+            font-size: 1.8em;
+            color: #e3e8ee;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #4a5568 100%);
+            color: #e3e8ee;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .day-accordion {
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .day-accordion:hover {
+            border-color: #64b5f6;
+            box-shadow: 0 5px 15px rgba(100, 181, 246, 0.2);
+        }
+
+        .day-header {
+            background: #4a5568;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .day-header:hover {
+            background: #2d3748;
+        }
+
+        .day-header.active {
+            background: #64b5f6;
+            color: white;
+        }
+
+        .day-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #e3e8ee;
+        }
+
+        .day-date {
+            font-size: 0.9em;
+            color: #81d4fa;
+            margin-left: 10px;
+        }
+
+        .day-header.active .day-date {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            width: 100px;
+            height: 8px;
+            background: #2d3748;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #64b5f6;
+            transition: width 0.3s ease;
+        }
+
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .day-header.active .arrow {
+            transform: rotate(90deg);
+        }
+
+        .day-content {
+            display: none;
+            padding: 0;
+        }
+
+        .day-content.active {
+            display: block;
+        }
+
+        .task-list {
+            padding: 0;
+        }
+
+        .task-item {
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .task-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .task-header:hover {
+            background: #4a5568;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #64b5f6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .task-checkbox:hover {
+            background: #64b5f6;
+            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
+        }
+
+        .task-checkbox.completed {
+            background: #64b5f6;
+            border-color: #64b5f6;
+        }
+
+        .task-checkbox.completed::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+
+        .task-title {
+            flex: 1;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .task-header.completed .task-title {
+            color: #2d3748;
+            text-decoration: line-through;
+        }
+
+        .task-details {
+            display: none;
+            padding: 15px 20px 20px 60px;
+            background: #4a5568;
+            border-top: 1px solid #2d3748;
+            color: #e3e8ee;
+        }
+
+        .task-details.active {
+            display: block;
+        }
+
+        .task-details p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .task-details a {
+            color: #81d4fa;
+            text-decoration: none;
+        }
+
+        .task-details a:hover {
+            text-decoration: underline;
+        }
+
+        .metrics-section, .review-section {
+            background: #2d3748;
+            border: 2px solid #64b5f6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+            color: #e3e8ee;
+        }
+
+        .metrics-section.completed, .review-section.completed {
+            background: #1a1f36;
+            border-color: #81d4fa;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .metric-item, .review-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .metric-header, .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .record-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .record-button:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .record-button.recording {
+            background: #28a745;
+            animation: recording-pulse 1s infinite;
+        }
+
+        @keyframes recording-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .metric-input, .review-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e1e5e9;
+            border-radius: 5px;
+            margin-top: 10px;
+            min-height: 100px;
+            resize: vertical;
+            display: none;
+        }
+
+        .metric-input.active, .review-input.active {
+            display: block;
+        }
+
+        .save-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .save-button:hover {
+            background: #218838;
+        }
+
+        .export-section {
+            text-align: center;
+            padding: 30px;
+            border-top: 2px solid #e1e5e9;
+        }
+
+        .export-button {
+            background: #6f42c1;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .export-button:hover {
+            background: #5a32a3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(111, 66, 193, 0.3);
+        }
+
+        .overdue {
+            border-color: #1a1f36 !important;
+            background: #2d3748 !important;
+        }
+
+        .current-day {
+            border-color: #64b5f6 !important;
+            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2) !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .day-header {
+                padding: 15px;
+            }
+            
+            .task-header {
+                padding: 12px 15px;
+            }
+            
+            .task-details {
+                padding: 12px 15px 15px 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TogetherWe Daily Execution Checklist</h1>
+            <p>MVP to 100,000 Daily Active Users</p>
+            
+            <div class="calendar-widget">
+                <div class="current-date" id="currentDate"></div>
+                <div class="start-date">Starting Monday, July 28, 2025</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Phase 1: MVP Sprint -->
+            <div class="phase">
+                <div class="phase-title">PHASE 1: MVP SPRINT (Days 1-14)</div>
+                
+                <!-- Day 1 -->
+                <div class="day-accordion" data-day="1">
+                    <div class="day-header" onclick="toggleDay(1)">
+                        <div>
+                            <span class="day-title">Day 1: Foundation Setup</span>
+                            <span class="day-date">Monday, July 28, 2025</span>
+                        </div>
+                        <div class="progress-indicator">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0/5</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                    </div>
+                    <div class="day-content">
+                        <div class="task-list">
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Set up GitHub repository and project structure</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Create a new GitHub repository for the TogetherWe project. Initialize with README, .gitignore for React Native, and MIT license.</p>
+                                    <p><strong>Steps:</strong></p>
+                                    <p>1. Go to <a href="https://github.com/new" target="_blank">GitHub.com/new</a></p>
+                                    <p>2. Repository name: "togetherwe-couples-app"</p>
+                                    <p>3. Add description: "AI-powered couples counseling mobile app"</p>
+                                    <p>4. Initialize with README and React Native .gitignore</p>
+                                    <p>5. Clone to local machine and create basic folder structure</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Initialize Firebase project and configure authentication</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Set up Firebase project with Authentication, Firestore, and Cloud Functions for the TogetherWe backend.</p>
+                                    <p><strong>Steps:</strong></p>
+                                    <p>1. Go to <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></p>
+                                    <p>2. Create new project: "togetherwe-production"</p>
+                                    <p>3. Enable Authentication (Email/Password and Google Sign-in)</p>
+                                    <p>4. Create Firestore database in production mode</p>
+                                    <p>5. Install Firebase CLI: npm install -g firebase-tools</p>
+                                    <p>6. Run: firebase init in project directory</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Set up development environment (VS Code, Copilot, Replit)</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Configure your AI-assisted development environment for maximum productivity.</p>
+                                    <p><strong>Tools to set up:</strong></p>
+                                    <p>1. VS Code with GitHub Copilot extension</p>
+                                    <p>2. React Native development tools (Node.js, React Native CLI)</p>
+                                    <p>3. Replit account connected to GitHub repo</p>
+                                    <p>4. Expo CLI for mobile development: npm install -g @expo/cli</p>
+                                    <p>5. Configure Claude AI access for development assistance</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Create basic React Native app shell with Expo</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Initialize the mobile app foundation using Expo for cross-platform development.</p>
+                                    <p><strong>Commands:</strong></p>
+                                    <p>1. npx create-expo-app TogetherWeApp --template</p>
+                                    <p>2. cd TogetherWeApp && npm install</p>
+                                    <p>3. Install necessary dependencies: expo install expo-auth-session expo-crypto</p>
+                                    <p>4. Set up basic navigation structure</p>
+                                    <p>5. Test app runs on iOS simulator and Android emulator</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Test AI integration with Claude/OpenAI for content generation</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Verify AI services are working correctly for therapy content generation.</p>
+                                    <p><strong>API Setup:</strong></p>
+                                    <p>1. Get OpenAI API key from <a href="https://platform.openai.com" target="_blank">OpenAI Platform</a></p>
+                                    <p>2. Test basic therapy content generation prompts</p>
+                                    <p>3. Create simple Node.js script to test API responses</p>
+                                    <p>4. Verify content quality meets therapeutic standards</p>
+                                    <p>5. Document successful prompt templates for future use</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 2 -->
+                <div class="day-accordion" data-day="2">
+                    <div class="day-header" onclick="toggleDay(2)">
+                        <div>
+                            <span class="day-title">Day 2: Core AI Engine</span>
+                            <span class="day-date">Tuesday, July 29, 2025</span>
+                        </div>
+                        <div class="progress-indicator">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0/5</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                    </div>
+                    <div class="day-content">
+                        <div class="task-list">
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Implement emotional tagging system from extracted components</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Build the core emotional analysis engine using the Tag_Weights_and_Confidence.csv data from your extracted components.</p>
+                                    <p><strong>Implementation:</strong></p>
+                                    <p>1. Import emotional tagging weights (Empathy Engine: 0.8, Tender Spot Scanner: 0.7, etc.)</p>
+                                    <p>2. Create NLP processing functions for text analysis</p>
+                                    <p>3. Implement blended confidence scoring algorithm</p>
+                                    <p>4. Test with sample relationship scenarios</p>
+                                    <p>5. Validate emotional tag accuracy with sample data</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Build daily therapy content generation pipeline</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Create the system that generates personalized 6AM thoughts and 12PM therapy narratives.</p>
+                                    <p><strong>Components:</strong></p>
+                                    <p>1. Morning insight generator (6AM daily thoughts)</p>
+                                    <p>2. Dual-perspective therapy narrative system (his/hers content)</p>
+                                    <p>3. Content personalization based on user profiles</p>
+                                    <p>4. Scheduling system for automatic content delivery</p>
+                                    <p>5. Content quality validation and safety checks</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Create user onboarding flow and couple pairing system</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Design the user registration process that connects couples and gathers relationship data.</p>
+                                    <p><strong>Features:</strong></p>
+                                    <p>1. Individual user registration with email verification</p>
+                                    <p>2. Couple pairing via invitation codes or email</p>
+                                    <p>3. Relationship assessment questionnaire</p>
+                                    <p>4. Communication style profiling (shutdown vs confrontational)</p>
+                                    <p>5. Privacy settings and data sharing preferences</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Set up basic notification system for daily content delivery</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Implement push notifications to deliver daily therapy content at scheduled times.</p>
+                                    <p><strong>Setup:</strong></p>
+                                    <p>1. Configure Expo push notifications</p>
+                                    <p>2. Set up Firebase Cloud Messaging integration</p>
+                                    <p>3. Create notification scheduling system (6AM, 12PM)</p>
+                                    <p>4. Implement timezone handling for global users</p>
+                                    <p>5. Test notification delivery on iOS and Android</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Test AI therapy content quality with sample scenarios</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Validate that AI-generated therapy content meets clinical standards and user needs.</p>
+                                    <p><strong>Testing scenarios:</strong></p>
+                                    <p>1. Communication breakdown between partners</p>
+                                    <p>2. Financial stress affecting relationship</p>
+                                    <p>3. Intimacy and connection challenges</p>
+                                    <p>4. Family and in-law relationship conflicts</p>
+                                    <p>5. Trust and rebuilding after conflicts</p>
+                                    <p>Ensure content is therapeutic, actionable, and appropriately empathetic.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="day-accordion" data-day="3">
+                    <div class="day-header" onclick="toggleDay(3)">
+                        <div>
+                            <span class="day-title">Day 3: User Experience</span>
+                            <span class="day-date">Wednesday, July 30, 2025</span>
+                        </div>
+                        <div class="progress-indicator">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0/5</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                    </div>
+                    <div class="day-content">
+                        <div class="task-list">
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Complete user registration and authentication flow</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Finalize the secure user authentication system with Firebase integration.</p>
+                                    <p><strong>Implementation:</strong></p>
+                                    <p>1. Email/password registration with validation</p>
+                                    <p>2. Google Sign-in integration</p>
+                                    <p>3. Password reset functionality</p>
+                                    <p>4. Email verification process</p>
+                                    <p>5. Secure session management and auto-login</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Build main dashboard with daily content display</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Create the primary user interface where couples view their daily therapy content.</p>
+                                    <p><strong>Dashboard features:</strong></p>
+                                    <p>1. Today's personalized content display</p>
+                                    <p>2. His/hers perspective toggle</p>
+                                    <p>3. Content reading progress tracking</p>
+                                    <p>4. Previous content history access</p>
+                                    <p>5. Partner activity and engagement indicators</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Implement basic progress tracking interface</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Build system to track and visualize relationship progress and engagement.</p>
+                                    <p><strong>Tracking elements:</strong></p>
+                                    <p>1. Daily content completion streaks</p>
+                                    <p>2. Weekly relationship health scores</p>
+                                    <p>3. Communication pattern improvements</p>
+                                    <p>4. Goal achievement milestones</p>
+                                    <p>5. Visual progress charts and graphs</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Create crisis intervention alert system</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Implement critical safety feature for detecting and responding to relationship crises.</p>
+                                    <p><strong>Crisis system:</strong></p>
+                                    <p>1. Real-time emotional state monitoring</p>
+                                    <p>2. Automatic crisis detection algorithms</p>
+                                    <p>3. Immediate professional alert protocols</p>
+                                    <p>4. Emergency contact notification system</p>
+                                    <p>5. Crisis resource directory and immediate help options</p>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item">
+                                <div class="task-header" onclick="toggleTask(this)">
+                                    <div class="task-checkbox" onclick="completeTask(this, event)"></div>
+                                    <div class="task-title">Test app functionality on iOS and Android devices</div>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="task-details">
+                                    <p>Comprehensive testing across different devices and operating systems.</p>
+                                    <p><strong>Testing checklist:</strong></p>
+                                    <p>1. iOS iPhone and iPad testing (multiple versions)</p>
+                                    <p>2. Android phone and tablet testing (various manufacturers)</p>
+                                    <p>3. Performance testing and load times</p>
+                                    <p>4. Network connectivity handling (offline/online)</p>
+                                    <p>5. User interface responsiveness and accessibility</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Metrics Tracking -->
+            <div class="metrics-section" id="dailyMetrics">
+                <h3>📊 Daily Metrics Tracking</h3>
+                <p>Complete these metrics at the end of each day:</p>
+                
+                <div class="metric-item">
+                    <div class="metric-header" onclick="toggleMetric(this)">
+                        <span>Daily Active Users</span>
+                        <button class="record-button" onclick="startRecording(this, event)">🎤</button>
+                    </div>
+                    <textarea class="metric-input" placeholder="Record your daily active user count and any observations..."></textarea>
+                    <button class="save-button" onclick="saveMetric(this)">Save</button>
+                </div>
+                
+                <div class="metric-item">
+                    <div class="metric-header" onclick="toggleMetric(this)">
+                        <span>New User Registrations</span>
+                        <button class="record-button" onclick="startRecording(this, event)">🎤</button>
+                    </div>
+                    <textarea class="metric-input" placeholder="Record new registrations and acquisition sources..."></textarea>
+                    <button class="save-button" onclick="saveMetric(this)">Save</button>
+                </div>
+                
+                <div class="metric-item">
+                    <div class="metric-header" onclick="toggleMetric(this)">
+                        <span>Subscription Conversions</span>
+                        <button class="record-button" onclick="startRecording(this, event)">🎤</button>
+                    </div>
+                    <textarea class="metric-input" placeholder="Record conversion rates and revenue data..."></textarea>
+                    <button class="save-button" onclick="saveMetric(this)">Save</button>
+                </div>
+            </div>
+
+            <!-- Weekly Review Questions -->
+            <div class="review-section" id="weeklyReview">
+                <h3>🔍 Weekly Review Questions</h3>
+                <p>Complete these questions at the end of each week:</p>
+                
+                <div class="review-item">
+                    <div class="review-header" onclick="toggleReview(this)">
+                        <span>Are we on track for user acquisition goals?</span>
+                        <button class="record-button" onclick="startRecording(this, event)">🎤</button>
+                    </div>
+                    <textarea class="review-input" placeholder="Record your assessment of user acquisition progress..."></textarea>
+                    <button class="save-button" onclick="saveReview(this)">Save</button>
+                </div>
+                
+                <div class="review-item">
+                    <div class="review-header" onclick="toggleReview(this)">
+                        <span>What features are users requesting most?</span>
+                        <button class="record-button" onclick="startRecording(this, event)">🎤</button>
+                    </div>
+                    <textarea class="review-input" placeholder="Record top user feature requests and feedback..."></textarea>
+                    <button class="save-button" onclick="saveReview(this)">Save</button>
+                </div>
+                
+                <div class="review-item">
+                    <div class="review-header" onclick="toggleReview(this)">
+                        <span>Which marketing channels are most effective?</span>
+                        <button class="record-button" onclick="startRecording(this, event)">🎤</button>
+                    </div>
+                    <textarea class="review-input" placeholder="Record marketing channel performance analysis..."></textarea>
+                    <button class="save-button" onclick="saveReview(this)">Save</button>
+                </div>
+            </div>
+
+            <div class="export-section">
+                <button class="export-button" onclick="exportData()">📥 Export All Data</button>
+                <button class="export-button" onclick="syncToCloud()">☁️ Sync to Cloud</button>
+                <button class="export-button" onclick="resetProgress()">🔄 Reset Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            loadProgress();
+            checkDailyMetrics();
+            checkWeeklyReview();
+            highlightCurrentDay();
+        });
+
+        // Date handling
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Accordion functionality
+        function toggleDay(dayNumber) {
+            const accordion = document.querySelector(`[data-day="${dayNumber}"]`);
+            const header = accordion.querySelector('.day-header');
+            const content = accordion.querySelector('.day-content');
+            
+            header.classList.toggle('active');
+            content.classList.toggle('active');
+        }
+
+        function toggleTask(taskHeader) {
+            const details = taskHeader.nextElementSibling;
+            const arrow = taskHeader.querySelector('.arrow');
+            
+            details.classList.toggle('active');
+            arrow.textContent = details.classList.contains('active') ? '▲' : '▼';
+        }
+
+        // Task completion
+        function completeTask(checkbox, event) {
+            event.stopPropagation();
+            
+            checkbox.classList.toggle('completed');
+            const taskHeader = checkbox.closest('.task-header');
+            taskHeader.classList.toggle('completed');
+            
+            updateDayProgress(checkbox);
+            saveProgress();
+        }
+
+        function updateDayProgress(checkbox) {
+            const dayAccordion = checkbox.closest('.day-accordion');
+            const allCheckboxes = dayAccordion.querySelectorAll('.task-checkbox');
+            const completedCheckboxes = dayAccordion.querySelectorAll('.task-checkbox.completed');
+            
+            const progress = (completedCheckboxes.length / allCheckboxes.length) * 100;
+            const progressFill = dayAccordion.querySelector('.progress-fill');
+            const progressText = dayAccordion.querySelector('.progress-text');
+            
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `${completedCheckboxes.length}/${allCheckboxes.length}`;
+        }
+
+        // Speech recognition and recording
+        function startRecording(button, event) {
+            event.stopPropagation();
+            
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Speech recognition not supported in this browser');
+                return;
+            }
+            
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            
+            const input = button.closest('.metric-item, .review-item').querySelector('textarea');
+            
+            button.classList.add('recording');
+            button.textContent = '⏹️';
+            
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                }
+                input.value += transcript;
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                button.classList.remove('recording');
+                button.textContent = '🎤';
+            };
+            
+            recognition.onend = function() {
+                button.classList.remove('recording');
+                button.textContent = '🎤';
+            };
+            
+            recognition.start();
+            
+            // Stop recording after 30 seconds
+            setTimeout(() => {
+                recognition.stop();
+            }, 30000);
+        }
+
+        // Metrics and review functions
+        function toggleMetric(header) {
+            const input = header.nextElementSibling;
+            input.classList.toggle('active');
+        }
+
+        function toggleReview(header) {
+            const input = header.nextElementSibling;
+            input.classList.toggle('active');
+        }
+
+        function saveMetric(button) {
+            const item = button.closest('.metric-item');
+            const input = item.querySelector('textarea');
+            const timestamp = new Date().toISOString();
+            
+            // Save to localStorage
+            const metrics = JSON.parse(localStorage.getItem('dailyMetrics') || '{}');
+            const today = new Date().toDateString();
+            
+            if (!metrics[today]) metrics[today] = {};
+            metrics[today][item.querySelector('span').textContent] = {
+                value: input.value,
+                timestamp: timestamp
+            };
+            
+            localStorage.setItem('dailyMetrics', JSON.stringify(metrics));
+            
+            input.style.border = '2px solid #28a745';
+            setTimeout(() => {
+                input.style.border = '';
+                input.classList.remove('active');
+            }, 1000);
+        }
+
+        function saveReview(button) {
+            const item = button.closest('.review-item');
+            const input = item.querySelector('textarea');
+            const timestamp = new Date().toISOString();
+            
+            // Save to localStorage
+            const reviews = JSON.parse(localStorage.getItem('weeklyReviews') || '{}');
+            const weekStart = getWeekStart();
+            
+            if (!reviews[weekStart]) reviews[weekStart] = {};
+            reviews[weekStart][item.querySelector('span').textContent] = {
+                value: input.value,
+                timestamp: timestamp
+            };
+            
+            localStorage.setItem('weeklyReviews', JSON.stringify(reviews));
+            
+            input.style.border = '2px solid #28a745';
+            setTimeout(() => {
+                input.style.border = '';
+                input.classList.remove('active');
+            }, 1000);
+        }
+
+        // Progress management
+        function saveProgress() {
+            const progress = {};
+            document.querySelectorAll('.day-accordion').forEach(day => {
+                const dayNumber = day.dataset.day;
+                const completed = [];
+                day.querySelectorAll('.task-checkbox.completed').forEach((checkbox, index) => {
+                    completed.push(index);
+                });
+                progress[dayNumber] = completed;
+            });
+            
+            localStorage.setItem('taskProgress', JSON.stringify(progress));
+            
+            // Sync to Firebase if available
+            if (window.firebase && firebase.auth().currentUser) {
+                syncToFirebase(progress);
+            }
+        }
+
+        function loadProgress() {
+            const progress = JSON.parse(localStorage.getItem('taskProgress') || '{}');
+            
+            Object.entries(progress).forEach(([dayNumber, completedTasks]) => {
+                const day = document.querySelector(`[data-day="${dayNumber}"]`);
+                if (day) {
+                    const checkboxes = day.querySelectorAll('.task-checkbox');
+                    completedTasks.forEach(index => {
+                        if (checkboxes[index]) {
+                            checkboxes[index].classList.add('completed');
+                            checkboxes[index].closest('.task-header').classList.add('completed');
+                        }
+                    });
+                    updateDayProgress(checkboxes[0]);
+                }
+            });
+        }
+
+        // Date and calendar functions
+        function getWeekStart() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(now.setDate(diff)).toDateString();
+        }
+
+        function highlightCurrentDay() {
+            const startDate = new Date('2025-07-28'); // Monday start date
+            const today = new Date();
+            const dayDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            
+            if (dayDiff > 0) {
+                const currentDay = document.querySelector(`[data-day="${dayDiff}"]`);
+                if (currentDay) {
+                    currentDay.classList.add('current-day');
+                }
+            }
+        }
+
+        function checkDailyMetrics() {
+            const now = new Date();
+            const hour = now.getHours();
+            
+            // Show metrics section if it's evening (after 6 PM)
+            if (hour >= 18) {
+                const metricsSection = document.getElementById('dailyMetrics');
+                const today = new Date().toDateString();
+                const savedMetrics = JSON.parse(localStorage.getItem('dailyMetrics') || '{}');
+                
+                if (!savedMetrics[today]) {
+                    metricsSection.style.display = 'block';
+                } else {
+                    metricsSection.classList.add('completed');
+                }
+            }
+        }
+
+        function checkWeeklyReview() {
+            const now = new Date();
+            const day = now.getDay();
+            
+            // Show weekly review on Sundays
+            if (day === 0) {
+                const reviewSection = document.getElementById('weeklyReview');
+                const weekStart = getWeekStart();
+                const savedReviews = JSON.parse(localStorage.getItem('weeklyReviews') || '{}');
+                
+                if (!savedReviews[weekStart]) {
+                    reviewSection.style.display = 'block';
+                } else {
+                    reviewSection.classList.add('completed');
+                }
+            }
+        }
+
+        // Export and sync functions
+        function exportData() {
+            const allData = {
+                taskProgress: JSON.parse(localStorage.getItem('taskProgress') || '{}'),
+                dailyMetrics: JSON.parse(localStorage.getItem('dailyMetrics') || '{}'),
+                weeklyReviews: JSON.parse(localStorage.getItem('weeklyReviews') || '{}'),
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(allData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `togetherwe-progress-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function syncToCloud() {
+            // Placeholder for Firebase sync
+            alert('Cloud sync functionality will be implemented with Firebase integration');
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                localStorage.removeItem('taskProgress');
+                localStorage.removeItem('dailyMetrics');
+                localStorage.removeItem('weeklyReviews');
+                location.reload();
+            }
+        }
+
+        function syncToFirebase(data) {
+            // Placeholder for Firebase sync implementation
+            console.log('Syncing to Firebase:', data);
+        }
+    </script>
+</body>
+</html>

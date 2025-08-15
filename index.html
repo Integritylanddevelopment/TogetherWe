@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherWe - AI-Powered Couples Therapy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #fff8e7 0%, #ffe4b5 50%, #ffb347 100%);
+            min-height: 100vh;
+            color: #5d4037;
+            line-height: 1.7;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .floating-shapes::before,
+        .floating-shapes::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .floating-shapes::before {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #ff7043, #ffab91);
+            top: 20%;
+            left: -100px;
+            animation-delay: -10s;
+        }
+
+        .floating-shapes::after {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #ff9800, #ffe0b2);
+            bottom: 30%;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        .hero {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 100px 20px 80px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            color: #d84315;
+            text-shadow: 2px 2px 4px rgba(216, 67, 21, 0.2);
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        .hero .tagline {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: #8d6e63;
+            font-style: italic;
+            letter-spacing: 1px;
+            animation: fadeInUp 1.5s ease-out 0.3s both;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto 50px;
+            line-height: 1.6;
+            color: #6d4c41;
+            animation: fadeInUp 1.5s ease-out 0.6s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .heart-divider {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 60px 0 80px;
+            animation: fadeInUp 1.5s ease-out 0.9s both;
+        }
+
+        .heart {
+            width: 60px;
+            height: 60px;
+            background: #ff7043;
+            position: relative;
+            transform: rotate(-45deg);
+            animation: heartbeat 2s ease-in-out infinite;
+            margin: 0 20px;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            background: #ff7043;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            top: -30px;
+            left: 0;
+        }
+
+        .heart::after {
+            left: 30px;
+            top: 0;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: rotate(-45deg) scale(1); }
+            50% { transform: rotate(-45deg) scale(1.1); }
+        }
+
+        .connection-line {
+            height: 3px;
+            background: linear-gradient(90deg, #ff7043, #ffab91, #ff7043);
+            border-radius: 2px;
+            flex: 1;
+            max-width: 150px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 50px;
+            margin: 0 0 100px;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 50px 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 6px solid transparent;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            border-radius: 25px 25px 0 0;
+        }
+
+        .category-card.product {
+            border-left-color: #ff7043;
+        }
+
+        .category-card.product::before {
+            background: linear-gradient(135deg, #ff7043, #ffab91);
+        }
+
+        .category-card.business {
+            border-left-color: #ff9800;
+        }
+
+        .category-card.business::before {
+            background: linear-gradient(135deg, #ff9800, #ffcc80);
+        }
+
+        .category-card.technology {
+            border-left-color: #f57c00;
+        }
+
+        .category-card.technology::before {
+            background: linear-gradient(135deg, #f57c00, #ffb74d);
+        }
+
+        .category-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .category-icon {
+            font-size: 3.5rem;
+            margin-right: 25px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .category-title {
+            font-size: 2.2rem;
+            font-weight: 400;
+            color: #d84315;
+            position: relative;
+        }
+
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff7043, #ffab91);
+            border-radius: 2px;
+        }
+
+        .category-description {
+            font-size: 1.15rem;
+            color: #6d4c41;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .page-links {
+            display: grid;
+            gap: 18px;
+        }
+
+        .page-link {
+            display: block;
+            padding: 20px 25px;
+            background: rgba(255, 248, 231, 0.8);
+            border: 2px solid #ffe0b2;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #5d4037;
+            font-weight: 500;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 112, 67, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .page-link:hover::before {
+            left: 100%;
+        }
+
+        .page-link:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .product .page-link:hover {
+            border-color: #ff7043;
+            color: #d84315;
+        }
+
+        .business .page-link:hover {
+            border-color: #ff9800;
+            color: #d84315;
+        }
+
+        .technology .page-link:hover {
+            border-color: #f57c00;
+            color: #d84315;
+        }
+
+        .page-link::after {
+            content: '→';
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .page-link:hover::after {
+            opacity: 1;
+            right: 20px;
+        }
+
+        .footer {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 80px 20px 60px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            margin-top: 50px;
+            border-top: 4px solid #ff7043;
+        }
+
+        .footer h3 {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            font-weight: 400;
+            color: #d84315;
+        }
+
+        .footer p {
+            font-size: 1.2rem;
+            color: #6d4c41;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #ff7043, #ff9800);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 112, 67, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 112, 67, 0.4);
+        }
+
+        .quote-section {
+            text-align: center;
+            margin: 80px 0;
+            padding: 50px 30px;
+            background: rgba(255, 248, 231, 0.6);
+            border-radius: 25px;
+            border-left: 5px solid #ff9800;
+            position: relative;
+        }
+
+        .quote-section::before {
+            content: '"';
+            font-size: 6em;
+            color: #ff9800;
+            position: absolute;
+            top: -20px;
+            left: 40px;
+            opacity: 0.2;
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: #5d4037;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .quote-author {
+            font-size: 1rem;
+            color: #8d6e63;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero .tagline {
+                font-size: 1.3rem;
+            }
+
+            .categories {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .category-card {
+                padding: 40px 30px;
+            }
+
+            .category-header {
+                flex-direction: column;
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .category-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .floating-shapes::before {
+                width: 200px;
+                height: 200px;
+            }
+
+            .floating-shapes::after {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes"></div>
+    
+    <div class="hero">
+        <h1>TogetherWe</h1>
+        <div class="tagline">AI-Powered Couples Therapy</div>
+        <div class="subtitle">
+            Revolutionary relationship support that adapts to your unique dynamics, providing personalized insights and therapeutic guidance to strengthen your connection.
+        </div>
+    </div>
+
+    <div class="heart-divider">
+        <div class="connection-line"></div>
+        <div class="heart"></div>
+        <div class="connection-line"></div>
+    </div>
+
+    <div class="container">
+        <div class="quote-section">
+            <div class="quote-text">
+                "Where Technology Meets the Human Soul"
+            </div>
+            <div class="quote-author">
+                Experience the future of relationship healing
+            </div>
+        </div>
+
+        <div class="categories">
+            <!-- Product Experience -->
+            <div class="category-card product">
+                <div class="category-header">
+                    <div class="category-icon">🌟</div>
+                    <div class="category-title">About the App</div>
+                </div>
+                <div class="category-description">
+                    Explore what TogetherWe offers couples - from AI insights to personalized therapy content and flexible pricing plans that adapt to your journey.
+                </div>
+                <div class="page-links">
+                    <a href="emotional_roadmap_presentation.html" class="page-link">
+                        Interactive Product Demo
+                    </a>
+                    <a href="togetherwe-pricing-page.html" class="page-link">
+                        Pricing & Plans
+                    </a>
+                    <a href="togetherwe_daily_checklist.html" class="page-link">
+                        Daily User Experience
+                    </a>
+                </div>
+            </div>
+
+            <!-- Business Intelligence -->
+            <div class="category-card business">
+                <div class="category-header">
+                    <div class="category-icon">💼</div>
+                    <div class="category-title">About the Business</div>
+                </div>
+                <div class="category-description">
+                    Market analysis, financial projections, and strategic insights for investors and stakeholders interested in transforming relationship care.
+                </div>
+                <div class="page-links">
+                    <a href="togetherewe_investor_pitch.html" class="page-link">
+                        Investor Presentation
+                    </a>
+                    <a href="togetherwe_kpi_dashboard.html" class="page-link">
+                        Growth Metrics & KPIs
+                    </a>
+                    <a href="togetherwe_pitch_deck.html" class="page-link">
+                        Executive Pitch Deck
+                    </a>
+                </div>
+            </div>
+
+            <!-- Technology Foundation -->
+            <div class="category-card technology">
+                <div class="category-header">
+                    <div class="category-icon">⚡</div>
+                    <div class="category-title">About the Tech</div>
+                </div>
+                <div class="category-description">
+                    Deep dive into the innovative architecture, security systems, and clinical framework powering TogetherWe's therapeutic intelligence.
+                </div>
+                <div class="page-links">
+                    <a href="remixed-9c4c3cbe.html" class="page-link">
+                        Triple Database Architecture
+                    </a>
+                    <a href="togetherwe_integration_guide.html" class="page-link">
+                        Development Integration Guide
+                    </a>
+                    <a href="clinical_org_chart.html" class="page-link">
+                        Clinical Team Structure
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h3>Ready to Transform Relationships?</h3>
+        <p>
+            Join the revolution in couples therapy with AI that understands, adapts, and empowers lasting love.
+        </p>
+        <a href="togetherewe_investor_pitch.html" class="cta-button">
+            Discover the Vision
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherWe Context Injection Engine</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1a202c;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: #64748b;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Tab System */
+        .tab-container {
+            margin-bottom: 2rem;
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #1e293b;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.7);
+            color: #1e293b;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Accordion System */
+        .accordion {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            background: none;
+            border: none;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+
+        .accordion-header:hover {
+            background: #f8fafc;
+        }
+
+        .accordion-header.active {
+            background: #f1f5f9;
+            color: #3b82f6;
+        }
+
+        .accordion-content {
+            padding: 0 2rem 1.5rem;
+            color: #475569;
+            line-height: 1.7;
+            display: none;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        .accordion-arrow {
+            transition: transform 0.2s;
+        }
+
+        .accordion-header.active .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Engine Grid */
+        .engines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .engine-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .engine-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .engine-card h3 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .engine-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .engine-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* Flow Diagram */
+        .flow-container {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .flow-step {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: '↓';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #3b82f6;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .step-description {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea22, #764ba222);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin: 1rem 0;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .comparison-before {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .comparison-after {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        .comparison-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .comparison-before .comparison-title {
+            color: #dc2626;
+        }
+
+        .comparison-after .comparison-title {
+            color: #059669;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .presentation-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .engines-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-list {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="header">
+            <h1>TogetherWe Context Injection Engine</h1>
+            <p>
+                How 20 Emotional Intelligence Engines work together with the Context Injection Engine 
+                to deliver personalized, precise therapeutic insights tailored specifically to each couple
+            </p>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-list">
+                <button class="tab-button active" onclick="showTab('overview')">System Overview</button>
+                <button class="tab-button" onclick="showTab('engines')">20 EI Engines</button>
+                <button class="tab-button" onclick="showTab('context')">Context Injection</button>
+                <button class="tab-button" onclick="showTab('flow')">Processing Flow</button>
+                <button class="tab-button" onclick="showTab('personalization')">Personalization</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <h2>System Architecture Overview</h2>
+                
+                <div class="highlight">
+                    <strong>The TogetherWe Context Injection Engine</strong> is the orchestrator that coordinates 
+                    20 specialized Emotional Intelligence Engines to create deeply personalized therapeutic experiences.
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            Core Architecture Components
+                            <span class="accordion-arrow">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="engines-grid">
+                                <div class="engine-card">
+                                    <h3>🎯 Pattern Analysis Orchestrator</h3>
+                                    <p>Coordinates all 20 engines, manages parallel processing, and synthesizes insights</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>🧠 20 Emotional Intelligence Engines</h3>
+                                    <p>Specialized AI counselors, each expert in specific therapeutic domains</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>⚡ Context Injection Engine</h3>
+                                    <p>Crafts personalized prompts and queries the AI with tailored context</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>🔄 CommandCore Memory System</h3>
+                                    <p>Maintains relationship history, patterns, and therapeutic progress</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            Why This Architecture Works
+                            <span class="accordion-arrow">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                                <li><strong>Comprehensive Coverage:</strong> Every major relationship domain is analyzed by specialized experts</li>
+                                <li><strong>Personalized Context:</strong> Each AI query includes your specific patterns, history, and needs</li>
+                                <li><strong>Clinical Accuracy:</strong> Evidence-based algorithms ensure therapeutic validity</li>
+                                <li><strong>Real-time Adaptation:</strong> System learns and adapts to your unique relationship dynamics</li>
+                                <li><strong>Crisis Safety:</strong> Immediate detection and professional escalation when needed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engines Tab -->
+            <div id="engines" class="tab-content">
+                <h2>20 Emotional Intelligence Engines</h2>
+                <p style="margin-bottom: 2rem; color: #475569;">
+                    Each engine is a specialized AI counselor with expertise in specific therapeutic domains:
+                </p>
+
+                <div class="engines-grid" id="engines-grid">
+                    <!-- Engines will be populated by JavaScript -->
+                </div>
+
+                <div class="highlight">
+                    <strong>Parallel Processing:</strong> All 20 engines analyze your relationship simultaneously, 
+                    each contributing their specialized perspective to create a comprehensive therapeutic understanding.
+                </div>
+            </div>
+
+            <!-- Context Tab -->
+            <div id="context" class="tab-content">
+                <h2>Context Injection Engine: The Personalization Core</h2>
+                
+                <div class="highlight">
+                    The Context Injection Engine transforms generic AI into your personal therapeutic companion 
+                    by crafting highly specific, contextually rich prompts based on your unique relationship data.
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            How Context Injection Works
+                            <span class="accordion-arrow">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="flow-container">
+                                <div class="flow-step">
+                                    <div class="step-header">
+                                        <span class="step-number">1</span>
+                                        <span class="step-title">Data Collection & Analysis</span>
+                                    </div>
+                                    <p class="step-description">
+                                        Gathers your responses from the 20-day onboarding, daily questions, 
+                                        relationship patterns, and historical therapeutic interactions.
+                                    </p>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-header">
+                                        <span class="step-number">2</span>
+                                        <span class="step-title">Pattern Recognition</span>
+                                    </div>
+                                    <p class="step-description">
+                                        Each of the 20 engines identifies relevant patterns in their domain 
+                                        (attachment style, communication patterns, conflict styles, etc.).
+                                    </p>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-header">
+                                        <span class="step-number">3</span>
+                                        <span class="step-title">Context Assembly</span>
+                                    </div>
+                                    <p class="step-description">
+                                        Combines insights from all engines into a comprehensive context profile 
+                                        that includes your attachment style, communication patterns, triggers, strengths, and current challenges.
+                                    </p>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-header">
+                                        <span class="step-number">4</span>
+                                        <span class="step-title">Prompt Crafting</span>
+                                    </div>
+                                    <p class="step-description">
+                                        Creates highly specific prompts that tell the AI exactly who you are, 
+                                        your relationship dynamics, and what kind of guidance would be most effective.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            Context Injection Example
+                            <span class="accordion-arrow">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p style="margin-bottom: 1rem;">
+                                Instead of asking a generic AI: <em>"How do I improve communication?"</em>
+                            </p>
+                            <p style="margin-bottom: 1rem;">
+                                The Context Injection Engine creates a personalized prompt like:
+                            </p>
+                            <div class="code-block">
+"You are counseling Sarah (anxious attachment, tends to pursue) 
+and Mike (avoidant attachment, withdraws during conflict). 
+
+Sarah's pattern: Becomes overwhelmed, seeks reassurance, 
+fears abandonment when Mike goes quiet.
+
+Mike's pattern: Shuts down when emotions get intense, 
+needs space to process, fears being controlled.
+
+Recent conflict: Financial decisions - Sarah wants joint 
+planning, Mike feels pressured and avoids the conversation.
+
+Therapeutic approach needed: EFT-based, focus on 
+underlying attachment needs, help them understand 
+each other's protective strategies.
+
+Question: How can they discuss finances without 
+triggering their attachment wounds?"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow Tab -->
+            <div id="flow" class="tab-content">
+                <h2>Complete Processing Flow</h2>
+                
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <div class="step-header">
+                            <span class="step-number">1</span>
+                            <span class="step-title">User Input Received</span>
+                        </div>
+                        <p class="step-description">
+                            Daily questions, voice responses, relationship check-ins, or crisis situations are captured.
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 15%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-header">
+                            <span class="step-number">2</span>
+                            <span class="step-title">Orchestrator Activation</span>
+                        </div>
+                        <p class="step-description">
+                            Pattern Analysis Orchestrator receives the input and activates relevant engines based on content analysis.
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-header">
+                            <span class="step-number">3</span>
+                            <span class="step-title">Parallel Engine Analysis</span>
+                        </div>
+                        <p class="step-description">
+                            All 20 engines simultaneously analyze the input through their specialized lenses, 
+                            each contributing domain-specific insights.
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-header">
+                            <span class="step-number">4</span>
+                            <span class="step-title">Memory Integration</span>
+                        </div>
+                        <p class="step-description">
+                            CommandCore Memory System provides historical context, previous patterns, 
+                            and therapeutic progress to enrich the analysis.
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-header">
+                            <span class="step-number">5</span>
+                            <span class="step-title">Context Injection</span>
+                        </div>
+                        <p class="step-description">
+                            Context Injection Engine crafts personalized prompts with your specific patterns, 
+                            relationship dynamics, and therapeutic needs.
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-header">
+                            <span class="step-number">6</span>
+                            <span class="step-title">AI Query & Response</span>
+                        </div>
+                        <p class="step-description">
+                            The personalized context is sent to Claude/GPT-4, which generates highly specific, 
+                            clinically informed therapeutic guidance tailored to your unique situation.
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-header">
+                            <span class="step-number">7</span>
+                            <span class="step-title">Personalized Delivery</span>
+                        </div>
+                        <p class="step-description">
+                            Final therapeutic insights are delivered in your preferred communication style, 
+                            with his/hers perspectives and actionable recommendations.
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personalization Tab -->
+            <div id="personalization" class="tab-content">
+                <h2>The Power of Personalization</h2>
+                
+                <div class="highlight">
+                    <strong>Generic AI vs. Context-Injected AI:</strong> The difference between receiving 
+                    general relationship advice and getting therapeutic guidance that feels like it was 
+                    written specifically for your unique relationship.
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            Before vs. After Context Injection
+                            <span class="accordion-arrow">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="comparison-grid">
+                                <div class="comparison-card comparison-before">
+                                    <div class="comparison-title">
+                                        ❌ Generic AI Response
+                                    </div>
+                                    <p style="font-style: italic; color: #7f1d1d;">
+                                        "Communication is important in relationships. Try active listening, 
+                                        use 'I' statements, and schedule regular check-ins to discuss issues."
+                                    </p>
+                                </div>
+                                <div class="comparison-card comparison-after">
+                                    <div class="comparison-title">
+                                        ✅ Context-Injected Response
+                                    </div>
+                                    <p style="font-style: italic; color: #064e3b;">
+                                        "Sarah, when you feel Mike pulling away, your anxious attachment is triggered. 
+                                        Instead of pursuing, try: 'Mike, I notice you seem quiet. I'm feeling a bit 
+                                        disconnected and would love to understand what you're processing. No pressure, 
+                                        just whenever you're ready.' Mike, when you need space, reassure Sarah first: 
+                                        'I need some time to think, but I'm not pulling away from us. Can we reconnect 
+                                        in an hour?'"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            Key Personalization Elements
+                            <span class="accordion-arrow">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="engines-grid">
+                                <div class="engine-card">
+                                    <h3>🎭 Attachment Styles</h3>
+                                    <p>Your specific attachment patterns (anxious, avoidant, secure, disorganized) guide all therapeutic recommendations</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>💬 Communication Patterns</h3>
+                                    <p>Your unique ways of expressing and receiving love, handling conflict, and processing emotions</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>🚨 Triggers & Strengths</h3>
+                                    <p>What specifically triggers each partner and what your relationship's unique strengths are</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>📚 Therapeutic History</h3>
+                                    <p>Previous conversations, progress made, and what approaches work best for your relationship</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>🎯 Current Context</h3>
+                                    <p>What's happening in your life right now - stress, life changes, recent conflicts or successes</p>
+                                </div>
+                                <div class="engine-card">
+                                    <h3>🗣️ Language Preferences</h3>
+                                    <p>How you prefer to receive feedback, your communication style, and cultural considerations</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            Therapeutic Outcomes
+                            <span class="accordion-arrow">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                                <li><strong>Immediate Relevance:</strong> Every insight feels directly applicable to your specific situation</li>
+                                <li><strong>Reduced Resistance:</strong> Recommendations match your natural communication style and preferences</li>
+                                <li><strong>Accelerated Progress:</strong> No time wasted on generic advice that doesn't fit your relationship</li>
+                                <li><strong>Deeper Understanding:</strong> Both partners gain insight into their specific patterns and dynamics</li>
+                                <li><strong>Sustainable Change:</strong> Interventions work because they're tailored to your unique psychology</li>
+                                <li><strong>Crisis Prevention:</strong> Early identification of your specific warning signs and triggers</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <strong>The Result:</strong> AI therapy that understands you as well as a human therapist 
+                    who has worked with you for months, available 24/7 at a fraction of the cost.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show the selected tab and mark button as active
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Accordion functionality
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            const isActive = header.classList.contains('active');
+
+            // Close all accordion items
+            const allHeaders = header.parentElement.parentElement.querySelectorAll('.accordion-header');
+            const allContents = header.parentElement.parentElement.querySelectorAll('.accordion-content');
+            
+            allHeaders.forEach(h => h.classList.remove('active'));
+            allContents.forEach(c => c.classList.remove('active'));
+
+            // If this item wasn't active, open it
+            if (!isActive) {
+                header.classList.add('active');
+                content.classList.add('active');
+            }
+        }
+
+        // Populate engines grid
+        const engines = [
+            { id: 1, name: "AttachmentStyleAnalysisEngine", focus: "Attachment patterns & emotional bonding" },
+            { id: 2, name: "CommunicationPatternsEngine", focus: "Gottman Method analysis" },
+            { id: 3, name: "EmotionalRegulationEngine", focus: "DBT emotional skills" },
+            { id: 4, name: "IntimacyConnectionEngine", focus: "Multi-dimensional intimacy" },
+            { id: 5, name: "ConflictResolutionEngine", focus: "Thomas-Kilmann conflict styles" },
+            { id: 6, name: "SexualIntimacyEngine", focus: "Sexual health & communication" },
+            { id: 7, name: "ParentingDynamicsEngine", focus: "Co-parenting & family systems" },
+            { id: 8, name: "FinancialStressEngine", focus: "Money-related conflicts" },
+            { id: 9, name: "AddictionRecoveryEngine", focus: "Substance abuse & recovery" },
+            { id: 10, name: "CulturalCompetencyEngine", focus: "Cross-cultural relationships" },
+            { id: 11, name: "GriefLossProcessingEngine", focus: "Bereavement & loss" },
+            { id: 12, name: "ChronicIllnessAdaptationEngine", focus: "Health challenges" },
+            { id: 13, name: "LGBTQRelationshipEngine", focus: "LGBTQ+ dynamics" },
+            { id: 14, name: "NeurodivergeExpansionEngine", focus: "Neurodiversity support" },
+            { id: 15, name: "ElderCareTransitionEngine", focus: "Aging & caregiving" },
+            { id: 16, name: "BlendedFamilyDynamicsEngine", focus: "Step-family integration" },
+            { id: 17, name: "FertilityReproductiveEngine", focus: "Reproductive challenges" },
+            { id: 18, name: "DigitalAgeRelationshipEngine", focus: "Technology & social media" },
+            { id: 19, name: "CrossReligiousSpiritualEngine", focus: "Interfaith relationships" },
+            { id: 20, name: "LifeTransitionNavigationEngine", focus: "Major life changes" }
+        ];
+
+        // Populate engines grid when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const enginesGrid = document.getElementById('engines-grid');
+            if (enginesGrid) {
+                enginesGrid.innerHTML = engines.map(engine => `
+                    <div class="engine-card">
+                        <h3>
+                            <span class="engine-number">${engine.id}</span>
+                            ${engine.name}
+                        </h3>
+                        <p>${engine.focus}</p>
+                    </div>
+                `).join('');
+            }
+        });
+    </script>
+</body>
+</html>

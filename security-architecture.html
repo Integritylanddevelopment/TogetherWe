@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherWe Triple Database Architecture</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-icons@1.3.0/dist/index.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .slide {
+            width: 100%;
+            max-width: 1200px;
+            height: calc(100vh - 120px);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: clamp(2em, 8vw, 3em);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: clamp(1.8em, 6vw, 2.5em);
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            line-height: 1.3;
+        }
+
+        h3 {
+            font-size: clamp(1.4em, 5vw, 1.8em);
+            margin-bottom: 15px;
+            color: #87ceeb;
+            border-bottom: 2px solid #87ceeb;
+            padding-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .database-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+            gap: 20px;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .database-visual {
+                flex-direction: row;
+                justify-content: space-around;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Arrow styles */
+        .arrow-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 60px;
+            height: 2px;
+            background: #ffd700;
+            transform-origin: left center;
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid #ffd700;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .arrow-left {
+            top: 50%;
+            left: 32%;
+            transform: rotate(-25deg);
+        }
+
+        .arrow-right {
+            top: 50%;
+            right: 32%;
+            transform: rotate(25deg) scaleX(-1);
+        }
+
+        @media (max-width: 767px) {
+            .arrow-container {
+                display: none;
+            }
+        }
+
+        .database-box {
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 280px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            touch-action: manipulation;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (min-width: 768px) {
+            .database-box {
+                width: auto;
+                min-width: 250px;
+            }
+        }
+
+        .database-box:hover, .database-box:active {
+            transform: translateY(-5px);
+        }
+
+        .database-box h4 {
+            font-size: clamp(1.2em, 4vw, 1.5em);
+            margin-bottom: 12px;
+            color: #ffd700;
+            line-height: 1.3;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (min-width: 600px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+            }
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #87ceeb;
+            touch-action: manipulation;
+        }
+
+        .feature-card h4 {
+            color: #87ceeb;
+            margin-bottom: 12px;
+            font-size: clamp(1.1em, 4vw, 1.3em);
+            line-height: 1.3;
+        }
+
+        .security-icon {
+            font-size: clamp(2.5em, 8vw, 4em);
+            text-align: center;
+            margin: 15px 0;
+            color: #ffd700;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #ffd700;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: clamp(0.9em, 3vw, 1em);
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+        }
+
+        .nav-btn:hover, .nav-btn:active {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: clamp(0.9em, 3vw, 1.1em);
+            z-index: 1000;
+        }
+
+        .privacy-shield {
+            display: inline-block;
+            margin: 0 8px;
+            font-size: clamp(1.5em, 5vw, 2em);
+            color: #4CAF50;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 15px;
+        }
+
+        li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: clamp(0.95em, 3.5vw, 1.1em);
+            line-height: 1.5;
+        }
+
+        li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .emphasis {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .connection-lines {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .line {
+            width: 60px;
+            height: 3px;
+            background: #87ceeb;
+            margin: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .line {
+                width: 100px;
+                margin: 0 10px;
+            }
+        }
+
+        .center-text {
+            text-align: center;
+            font-size: clamp(1em, 4vw, 1.2em);
+            margin: 20px 0;
+            line-height: 1.5;
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .database-box:hover {
+                transform: none;
+            }
+            
+            .nav-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .slide {
+                padding: 15px;
+                height: calc(100vh - 80px);
+            }
+            
+            .navigation {
+                bottom: 10px;
+            }
+            
+            .slide-counter {
+                top: 10px;
+                right: 10px;
+            }
+            
+            h1 {
+                margin-bottom: 15px;
+            }
+            
+            h2 {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 320px) {
+            .slide {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .database-box {
+                padding: 15px;
+                border-radius: 12px;
+            }
+            
+            .feature-card {
+                padding: 15px;
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>TogetherWe</h1>
+            <div class="center-text">
+                <h2>Triple Database Architecture</h2>
+                <div class="security-icon">
+                    <svg width="64" height="64" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5V5.875C3.46079 5.875 3.125 6.21079 3.125 6.625V11.875C3.125 12.2892 3.46079 12.625 3.875 12.625H11.125C11.5392 12.625 11.875 12.2892 11.875 11.875V6.625C11.875 6.21079 11.5392 5.875 11.125 5.875V4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.875 4.5C4.875 3.05025 6.05025 1.875 7.5 1.875C8.94975 1.875 10.125 3.05025 10.125 4.5V5.875H4.875V4.5ZM4.125 6.875H10.875V11.625H4.125V6.875Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <p style="font-size: 1.5em; margin-top: 30px;">
+                    <span class="emphasis">Protecting Privacy</span> while <span class="emphasis">Enabling Connection</span>
+                </p>
+                <p style="font-size: 1.2em; margin-top: 20px; opacity: 0.9;">
+                    Revolutionary 3-Profile System for Couples Therapy
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: The Problem -->
+        <div class="slide">
+            <h2>Why Triple Database?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M5.5 1C5.22386 1 5 1.22386 5 1.5C5 1.77614 5.22386 2 5.5 2H9.5C9.77614 2 10 1.77614 10 1.5C10 1.22386 9.77614 1 9.5 1H5.5ZM3 3.5C3 3.22386 3.22386 3 3.5 3H5H10H11.5C11.7761 3 12 3.22386 12 3.5C12 3.77614 11.7761 4 11.5 4H11V12C11 12.5523 10.5523 13 10 13H5C4.44772 13 4 12.5523 4 12V4H3.5C3.22386 4 3 3.77614 3 3.5ZM5 4V12H10V4H5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Current Problem
+                    </h4>
+                    <p>Traditional couples therapy apps share everything between partners, creating:</p>
+                    <ul>
+                        <li>Privacy concerns</li>
+                        <li>Hesitation to be honest</li>
+                        <li>Power imbalances</li>
+                        <li>Trust issues with data</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M8 2.5C8 2.22386 7.77614 2 7.5 2C7.22386 2 7 2.22386 7 2.5V7H2.5C2.22386 7 2 7.22386 2 7.5C2 7.77614 2.22386 8 2.5 8H7V12.5C7 12.7761 7.22386 13 7.5 13C7.77614 13 8 12.7761 8 12.5V8H12.5C12.7761 8 13 7.77614 13 7.5C13 7.22386 12.7761 7 12.5 7H8V2.5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Our Solution
+                    </h4>
+                    <p>Three separate databases ensure:</p>
+                    <ul>
+                        <li>Individual privacy protection</li>
+                        <li>Safe spaces for honest reflection</li>
+                        <li>Controlled sharing mechanisms</li>
+                        <li>Dual permission protocols</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="center-text">
+                <p style="font-size: 1.3em; margin-top: 30px;">
+                    <span class="emphasis">Privacy + Connection = Better Therapy Outcomes</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Database Architecture -->
+        <div class="slide">
+            <h2>Triple Database Architecture</h2>
+            <div class="database-visual">
+                <div class="arrow-container">
+                    <div class="arrow arrow-left"></div>
+                    <div class="arrow arrow-right"></div>
+                </div>
+                <div class="database-box">
+                    <h4>Partner 1 Database</h4>
+                    <div class="privacy-shield">
+                        <svg width="48" height="48" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.49991 0.877045C3.84222 0.877045 0.877075 3.84219 0.877075 7.49988C0.877075 11.1575 3.84222 14.1227 7.49991 14.1227C11.1576 14.1227 14.1227 11.1575 14.1227 7.49988C14.1227 3.84219 11.1576 0.877045 7.49991 0.877045ZM1.82708 7.49988C1.82708 4.36686 4.36689 1.82704 7.49991 1.82704C10.6329 1.82704 13.1727 4.36686 13.1727 7.49988C13.1727 10.6329 10.6329 13.1727 7.49991 13.1727C4.36689 13.1727 1.82708 10.6329 1.82708 7.49988ZM10.1589 5.53774C10.3178 5.31191 10.2636 5.00001 10.0378 4.84109C9.81194 4.68217 9.50004 4.73642 9.34112 4.96225L6.51977 8.97154L5.35681 7.78706C5.16334 7.59002 4.84677 7.58711 4.64973 7.78058C4.45268 7.97404 4.44978 8.29061 4.64325 8.48765L6.22658 10.1003C6.33054 10.2062 6.47617 10.2604 6.62407 10.2483C6.77197 10.2363 6.90686 10.1591 6.99226 10.0377L10.1589 5.53774Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <p>Private thoughts, individual assessments, personal therapy progress</p>
+                    <ul>
+                        <li>Personal reflections</li>
+                        <li>Individual triggers</li>
+                        <li>Private goals</li>
+                        <li>Therapy history</li>
+                    </ul>
+                </div>
+                <div class="database-box">
+                    <h4>Couple Database</h4>
+                    <div class="privacy-shield">
+                        <svg width="48" height="48" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4.2 1H4.17741H4.1774C3.86936 0.999988 3.60368 0.999978 3.38609 1.02067C3.15576 1.04257 2.92825 1.09113 2.71625 1.22104C2.51442 1.34472 2.34473 1.51442 2.22104 1.71625C2.09113 1.92825 2.04257 2.15576 2.02067 2.38609C1.99998 2.60367 1.99999 2.86935 2 3.17738V3.1774V3.2V11.8V11.8226V11.8226C1.99999 12.1307 1.99998 12.3963 2.02067 12.6139C2.04257 12.8442 2.09113 13.0717 2.22104 13.2837C2.34473 13.4856 2.51442 13.6553 2.71625 13.779C2.92825 13.9089 3.15576 13.9574 3.38609 13.9793C3.60368 14 3.86937 14 4.17741 14H4.2H10.8H10.8226C11.1306 14 11.3963 14 11.6139 13.9793C11.8442 13.9574 12.0717 13.9089 12.2837 13.779C12.4856 13.6553 12.6553 13.4856 12.779 13.2837C12.9089 13.0717 12.9574 12.8442 12.9793 12.6139C13 12.3963 13 12.1306 13 11.8226V11.8V3.2V3.17741C13 2.86936 13 2.60368 12.9793 2.38609C12.9574 2.15576 12.9089 1.92825 12.779 1.71625C12.6553 1.51442 12.4856 1.34472 12.2837 1.22104C12.0717 1.09113 11.8442 1.04257 11.6139 1.02067C11.3963 0.999978 11.1307 0.999988 10.8226 1H10.8H4.2ZM3.23875 2.07368C3.26722 2.05623 3.32362 2.03112 3.48075 2.01618C3.64532 2.00053 3.86298 2 4.2 2H10.8C11.137 2 11.3547 2.00053 11.5193 2.01618C11.6764 2.03112 11.7328 2.05623 11.7613 2.07368C11.8285 2.11491 11.8851 2.17147 11.9263 2.23875C11.9438 2.26722 11.9689 2.32362 11.9838 2.48075C11.9995 2.64532 12 2.86298 12 3.2V11.8C12 12.137 11.9995 12.3547 11.9838 12.5193C11.9689 12.6764 11.9438 12.7328 11.9263 12.7613C11.8851 12.8285 11.8285 12.8851 11.7613 12.9263C11.7328 12.9438 11.6764 12.9689 11.5193 12.9838C11.3547 12.9995 11.137 13 10.8 13H4.2C3.86298 13 3.64532 12.9995 3.48075 12.9838C3.32362 12.9689 3.26722 12.9438 3.23875 12.9263C3.17147 12.8851 3.11491 12.8285 3.07368 12.7613C3.05623 12.7328 3.03112 12.6764 3.01618 12.5193C3.00053 12.3547 3 12.137 3 11.8V3.2C3 2.86298 3.00053 2.64532 3.01618 2.48075C3.03112 2.32362 3.05623 2.26722 3.07368 2.23875C3.11491 2.17147 3.17147 2.11491 3.23875 2.07368ZM5 10C4.72386 10 4.5 10.2239 4.5 10.5C4.5 10.7761 4.72386 11 5 11H8C8.27614 11 8.5 10.7761 8.5 10.5C8.5 10.2239 8.27614 10 8 10H5ZM4.5 7.5C4.5 7.22386 4.72386 7 5 7H10C10.2761 7 10.5 7.22386 10.5 7.5C10.5 7.77614 10.2761 8 10 8H5C4.72386 8 4.5 7.77614 4.5 7.5ZM5 4C4.72386 4 4.5 4.22386 4.5 4.5C4.5 4.77614 4.72386 5 5 5H10C10.2761 5 10.5 4.77614 10.5 4.5C10.5 4.22386 10.2761 4 10 4H5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <p>AI therapist analyzes both partners' data to provide relationship insights, with dual permission required to access results</p>
+                    <ul>
+                        <li>AI-generated therapy content</li>
+                        <li>Relationship analysis</li>
+                        <li>Crisis prevention protocols</li>
+                        <li>Joint progress insights</li>
+                    </ul>
+                </div>
+                <div class="database-box">
+                    <h4>Partner 2 Database</h4>
+                    <div class="privacy-shield">
+                        <svg width="48" height="48" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.49991 0.877045C3.84222 0.877045 0.877075 3.84219 0.877075 7.49988C0.877075 11.1575 3.84222 14.1227 7.49991 14.1227C11.1576 14.1227 14.1227 11.1575 14.1227 7.49988C14.1227 3.84219 11.1576 0.877045 7.49991 0.877045ZM1.82708 7.49988C1.82708 4.36686 4.36689 1.82704 7.49991 1.82704C10.6329 1.82704 13.1727 4.36686 13.1727 7.49988C13.1727 10.6329 10.6329 13.1727 7.49991 13.1727C4.36689 13.1727 1.82708 10.6329 1.82708 7.49988ZM10.1589 5.53774C10.3178 5.31191 10.2636 5.00001 10.0378 4.84109C9.81194 4.68217 9.50004 4.73642 9.34112 4.96225L6.51977 8.97154L5.35681 7.78706C5.16334 7.59002 4.84677 7.58711 4.64973 7.78058C4.45268 7.97404 4.44978 8.29061 4.64325 8.48765L6.22658 10.1003C6.33054 10.2062 6.47617 10.2604 6.62407 10.2483C6.77197 10.2363 6.90686 10.1591 6.99226 10.0377L10.1589 5.53774Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <p>Separate private space for individual growth and reflection</p>
+                    <ul>
+                        <li>Personal insights</li>
+                        <li>Individual patterns</li>
+                        <li>Private concerns</li>
+                        <li>Personal development</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Dual Permission System -->
+        <div class="slide">
+            <h2>AI Therapist Processing</h2>
+            <div class="center-text">
+                <h3>How the Digital Therapist Works</h3>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M9.96424 2.68571C10.0668 2.42931 9.94209 2.13833 9.6857 2.03577C9.4293 1.93322 9.13832 2.05792 9.03576 2.31432L5.03576 12.3143C4.9332 12.5707 5.05791 12.8617 5.3143 12.9642C5.5707 13.0668 5.86168 12.9421 5.96424 12.6857L9.96424 2.68571ZM3.85355 5.14645C4.04882 5.34171 4.04882 5.65829 3.85355 5.85355L2.20711 7.5L3.85355 9.14645C4.04882 9.34171 4.04882 9.65829 3.85355 9.85355C3.65829 10.0488 3.34171 10.0488 3.14645 9.85355L1.14645 7.85355C0.951184 7.65829 0.951184 7.34171 1.14645 7.14645L3.14645 5.14645C3.34171 4.95118 3.65829 4.95118 3.85355 5.14645ZM11.1464 5.14645C11.3417 4.95118 11.6583 4.95118 11.8536 5.14645L13.8536 7.14645C14.0488 7.34171 14.0488 7.65829 13.8536 7.85355L11.8536 9.85355C11.6583 10.0488 11.3417 10.0488 11.1464 9.85355C10.9512 9.65829 10.9512 9.34171 11.1464 9.14645L12.7929 7.5L11.1464 5.85355C10.9512 5.65829 10.9512 5.34171 11.1464 5.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Step 1: AI Analysis
+                    </h4>
+                    <p>Digital therapist analyzes both partners' private data to understand relationship dynamics</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M4.2 1H4.17741H4.1774C3.86936 0.999988 3.60368 0.999978 3.38609 1.02067C3.15576 1.04257 2.92825 1.09113 2.71625 1.22104C2.51442 1.34472 2.34473 1.51442 2.22104 1.71625C2.09113 1.92825 2.04257 2.15576 2.02067 2.38609C1.99998 2.60367 1.99999 2.86935 2 3.17738V3.1774V3.2V11.8V11.8226V11.8226C1.99999 12.1307 1.99998 12.3963 2.02067 12.6139C2.04257 12.8442 2.09113 13.0717 2.22104 13.2837C2.34473 13.4856 2.51442 13.6553 2.71625 13.779C2.92825 13.9089 3.15576 13.9574 3.38609 13.9793C3.60368 14 3.86937 14 4.17741 14H4.2H10.8H10.8226C11.1306 14 11.3963 14 11.6139 13.9793C11.8442 13.9574 12.0717 13.9089 12.2837 13.779C12.4856 13.6553 12.6553 13.4856 12.779 13.2837C12.9089 13.0717 12.9574 12.8442 12.9793 12.6139C13 12.3963 13 12.1306 13 11.8226V11.8V3.2V3.17741C13 2.86936 13 2.60368 12.9793 2.38609C12.9574 2.15576 12.9089 1.92825 12.779 1.71625C12.6553 1.51442 12.4856 1.34472 12.2837 1.22104C12.0717 1.09113 11.8442 1.04257 11.6139 1.02067C11.3963 0.999978 11.1307 0.999988 10.8226 1H10.8H4.2ZM3.23875 2.07368C3.26722 2.05623 3.32362 2.03112 3.48075 2.01618C3.64532 2.00053 3.86298 2 4.2 2H10.8C11.137 2 11.3547 2.00053 11.5193 2.01618C11.6764 2.03112 11.7328 2.05623 11.7613 2.07368C11.8285 2.11491 11.8851 2.17147 11.9263 2.23875C11.9438 2.26722 11.9689 2.32362 11.9838 2.48075C11.9995 2.64532 12 2.86298 12 3.2V11.8C12 12.137 11.9995 12.3547 11.9838 12.5193C11.9689 12.6764 11.9438 12.7328 11.9263 12.7613C11.8851 12.8285 11.8285 12.8851 11.7613 12.9263C11.7328 12.9438 11.6764 12.9689 11.5193 12.9838C11.3547 12.9995 11.137 13 10.8 13H4.2C3.86298 13 3.64532 12.9995 3.48075 12.9838C3.32362 12.9689 3.26722 12.9438 3.23875 12.9263C3.17147 12.8851 3.11491 12.8285 3.07368 12.7613C3.05623 12.7328 3.03112 12.6764 3.01618 12.5193C3.00053 12.3547 3 12.137 3 11.8V3.2C3 2.86298 3.00053 2.64532 3.01618 2.48075C3.03112 2.32362 3.05623 2.26722 3.07368 2.23875C3.11491 2.17147 3.17147 2.11491 3.23875 2.07368ZM5 10C4.72386 10 4.5 10.2239 4.5 10.5C4.5 10.7761 4.72386 11 5 11H8C8.27614 11 8.5 10.7761 8.5 10.5C8.5 10.2239 8.27614 10 8 10H5ZM4.5 7.5C4.5 7.22386 4.72386 7 5 7H10C10.2761 7 10.5 7.22386 10.5 7.5C10.5 7.77614 10.2761 8 10 8H5C4.72386 8 4.5 7.77614 4.5 7.5ZM5 4C4.72386 4 4.5 4.22386 4.5 4.5C4.5 4.77614 4.72386 5 5 5H10C10.2761 5 10.5 4.77614 10.5 4.5C10.5 4.22386 10.2761 4 10 4H5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Step 2: Generate Insights
+                    </h4>
+                    <p>AI creates relationship insights and crisis prevention protocols in couple database</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5V5.875C3.46079 5.875 3.125 6.21079 3.125 6.625V11.875C3.125 12.2892 3.46079 12.625 3.875 12.625H11.125C11.5392 12.625 11.875 12.2892 11.875 11.875V6.625C11.875 6.21079 11.5392 5.875 11.125 5.875V4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.875 4.5C4.875 3.05025 6.05025 1.875 7.5 1.875C8.94975 1.875 10.125 3.05025 10.125 4.5V5.875H4.875V4.5ZM4.125 6.875H10.875V11.625H4.125V6.875Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Step 3: Dual Permission Access
+                    </h4>
+                    <p>Both partners must consent before accessing AI-generated therapy content and insights</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.49991 0.877045C3.84222 0.877045 0.877075 3.84219 0.877075 7.49988C0.877075 11.1575 3.84222 14.1227 7.49991 14.1227C11.1576 14.1227 14.1227 11.1575 14.1227 7.49988C14.1227 3.84219 11.1576 0.877045 7.49991 0.877045ZM1.82708 7.49988C1.82708 4.36686 4.36689 1.82704 7.49991 1.82704C10.6329 1.82704 13.1727 4.36686 13.1727 7.49988C13.1727 10.6329 10.6329 13.1727 7.49991 13.1727C4.36689 13.1727 1.82708 10.6329 1.82708 7.49988ZM10.1589 5.53774C10.3178 5.31191 10.2636 5.00001 10.0378 4.84109C9.81194 4.68217 9.50004 4.73642 9.34112 4.96225L6.51977 8.97154L5.35681 7.78706C5.16334 7.59002 4.84677 7.58711 4.64973 7.78058C4.45268 7.97404 4.44978 8.29061 4.64325 8.48765L6.22658 10.1003C6.33054 10.2062 6.47617 10.2604 6.62407 10.2483C6.77197 10.2363 6.90686 10.1591 6.99226 10.0377L10.1589 5.53774Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Step 4: Private Data Protected
+                    </h4>
+                    <p>Individual databases remain completely private - only AI insights are shared with consent</p>
+                </div>
+            </div>
+            <div class="center-text" style="margin-top: 30px;">
+                <p style="font-size: 1.2em;">
+                    <span class="emphasis">AI reads all. Partners control access to insights.</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Privacy Benefits -->
+        <div class="slide">
+            <h2>Privacy Protection Benefits</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.49996 1.80002C4.35786 1.80002 1.79996 4.35788 1.79996 7.50002C1.79996 10.6422 4.35786 13.2 7.49996 13.2C10.6421 13.2 13.2 10.6422 13.2 7.50002C13.2 4.35788 10.6421 1.80002 7.49996 1.80002ZM0.899963 7.50002C0.899963 3.85494 3.85488 0.900024 7.49996 0.900024C11.145 0.900024 14.1 3.85494 14.1 7.50002C14.1 11.1451 11.145 14.1 7.49996 14.1C3.85488 14.1 0.899963 11.1451 0.899963 7.50002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M13.4999 7.89998H1.49994V7.09998H13.4999V7.89998Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M7.09991 13.5V1.5H7.89991V13.5H7.09991zM10.375 7.49998C10.375 5.32724 9.59364 3.17778 8.06183 1.75656L8.53793 1.24341C10.2396 2.82218 11.075 5.17273 11.075 7.49998C11.075 9.82724 10.2396 12.1778 8.53793 13.7566L8.06183 13.2434C9.59364 11.8222 10.375 9.67273 10.375 7.49998zM3.99969 7.5C3.99969 5.17611 4.80786 2.82678 6.45768 1.24719L6.94177 1.76281C5.4582 3.17323 4.69969 5.32389 4.69969 7.5C4.69969 9.67611 5.4582 11.8268 6.94177 13.2372L6.45768 13.7528C4.80786 12.1732 3.99969 9.82389 3.99969 7.5z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Honest Self-Reflection
+                    </h4>
+                    <p>Private spaces encourage authentic responses without fear of partner judgment</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M6.1584 3.13508C6.35985 2.94621 6.67627 2.95642 6.86514 3.15788L10.6151 7.15788C10.7954 7.3502 10.7954 7.64949 10.6151 7.84182L6.86514 11.8418C6.67627 12.0433 6.35985 12.0535 6.1584 11.8646C5.95694 11.6757 5.94673 11.3593 6.1356 11.1579L9.565 7.49985L6.1356 3.84182C5.94673 3.64036 5.95694 3.32394 6.1584 3.13508Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M2.1584 3.13508C2.35985 2.94621 2.67627 2.95642 2.86514 3.15788L6.61514 7.15788C6.79543 7.3502 6.79543 7.64949 6.61514 7.84182L2.86514 11.8418C2.67627 12.0433 2.35985 12.0535 2.1584 11.8646C1.95694 11.6757 1.94673 11.3593 2.1356 11.1579L5.565 7.49985L2.1356 3.84182C1.94673 3.64036 1.95694 3.32394 2.1584 3.13508Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Individual Growth
+                    </h4>
+                    <p>Personal development can happen safely before being shared with partner</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.07926 0.222253C7.31275 -0.007434 7.6873 -0.007434 7.92079 0.222253L14.6708 6.86227C14.907 7.09465 14.907 7.47872 14.6708 7.71109C14.4346 7.94347 14.0505 7.94347 13.8142 7.71109L7.50002 1.49696L1.18583 7.71109C0.949459 7.94347 0.565384 7.94347 0.329009 7.71109C0.0926341 7.47872 0.0926341 7.09465 0.329009 6.86227L7.07926 0.222253ZM7.07926 2.22225C7.31275 1.99257 7.6873 1.99257 7.92079 2.22225L14.6708 8.86227C14.907 9.09465 14.907 9.47872 14.6708 9.71109C14.4346 9.94347 14.0505 9.94347 13.8142 9.71109L7.50002 3.49696L1.18583 9.71109C0.949459 9.94347 0.565384 9.94347 0.329009 9.71109C0.0926341 9.47872 0.0926341 9.09465 0.329009 8.86227L7.07926 2.22225ZM7.07926 4.22225C7.31275 3.99257 7.6873 3.99257 7.92079 4.22225L14.6708 10.8623C14.907 11.0946 14.907 11.4787 14.6708 11.7111C14.4346 11.9435 14.0505 11.9435 13.8142 11.7111L7.50002 5.49696L1.18583 11.7111C0.949459 11.9435 0.565384 11.9435 0.329009 11.7111C0.0926341 11.4787 0.0926341 11.0946 0.329009 10.8623L7.07926 4.22225ZM7.07926 6.22225C7.31275 5.99257 7.6873 5.99257 7.92079 6.22225L14.6708 12.8623C14.907 13.0946 14.907 13.4787 14.6708 13.7111C14.4346 13.9435 14.0505 13.9435 13.8142 13.7111L7.50002 7.49696L1.18583 13.7111C0.949459 13.9435 0.565384 13.9435 0.329009 13.7111C0.0926341 13.4787 0.0926341 13.0946 0.329009 12.8623L7.07926 6.22225Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Power Balance
+                    </h4>
+                    <p>Neither partner can access the other's private information without consent</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5V5.875C3.46079 5.875 3.125 6.21079 3.125 6.625V11.875C3.125 12.2892 3.46079 12.625 3.875 12.625H11.125C11.5392 12.625 11.875 12.2892 11.875 11.875V6.625C11.875 6.21079 11.5392 5.875 11.125 5.875V4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.875 4.5C4.875 3.05025 6.05025 1.875 7.5 1.875C8.94975 1.875 10.125 3.05025 10.125 4.5V5.875H4.875V4.5ZM4.125 6.875H10.875V11.625H4.125V6.875Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Data Security
+                    </h4>
+                    <p>Triple encryption ensures maximum protection against breaches</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5V5.875C3.46079 5.875 3.125 6.21079 3.125 6.625V11.875C3.125 12.2892 3.46079 12.625 3.875 12.625H11.125C11.5392 12.625 11.875 12.2892 11.875 11.875V6.625C11.875 6.21079 11.5392 5.875 11.125 5.875V4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.875 4.5C4.875 3.05025 6.05025 1.875 7.5 1.875C8.94975 1.875 10.125 3.05025 10.125 4.5V5.875H4.875V4.5ZM4.125 6.875H10.875V11.625H4.125V6.875Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Safe Vulnerability
+                    </h4>
+                    <p>Express difficult emotions privately before sharing with partner</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M4.5 1C4.77614 1 5 1.22386 5 1.5V2H10V1.5C10 1.22386 10.2239 1 10.5 1C10.7761 1 11 1.22386 11 1.5V2H12.5C13.3284 2 14 2.67157 14 3.5V12.5C14 13.3284 13.3284 14 12.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5C1 2.67157 1.67157 2 2.5 2H4V1.5C4 1.22386 4.22386 1 4.5 1ZM10 3V3.5C10 3.77614 10.2239 4 10.5 4C10.7761 4 11 3.77614 11 3.5V3H12.5C12.7761 3 13 3.22386 13 3.5V5H2V3.5C2 3.22386 2.22386 3 2.5 3H4V3.5C4 3.77614 4.22386 4 4.5 4C4.77614 4 5 3.77614 5 3.5V3H10ZM2 6V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V6H2ZM7 7.5C7 7.22386 7.22386 7 7.5 7C7.77614 7 8 7.22386 8 7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5ZM9.5 7C9.22386 7 9 7.22386 9 7.5C9 7.77614 9.22386 8 9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7ZM11 7.5C11 7.22386 11.2239 7 11.5 7C11.7761 7 12 7.22386 12 7.5C12 7.77614 11.7761 8 11.5 8C11.2239 8 11 7.77614 11 7.5ZM11.5 9C11.2239 9 11 9.22386 11 9.5C11 9.77614 11.2239 10 11.5 10C11.7761 10 12 9.77614 12 9.5C12 9.22386 11.7761 9 11.5 9ZM9 9.5C9 9.22386 9.22386 9 9.5 9C9.77614 9 10 9.22386 10 9.5C10 9.77614 9.77614 10 9.5 10C9.22386 10 9 9.77614 9 9.5ZM7.5 9C7.22386 9 7 9.22386 7 9.5C7 9.77614 7.22386 10 7.5 10C7.77614 10 8 9.77614 8 9.5C8 9.22386 7.77614 9 7.5 9ZM5 9.5C5 9.22386 5.22386 9 5.5 9C5.77614 9 6 9.22386 6 9.5C6 9.77614 5.77614 10 5.5 10C5.22386 10 5 9.77614 5 9.5ZM3.5 9C3.22386 9 3 9.22386 3 9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5C4 9.22386 3.77614 9 3.5 9ZM3 11.5C3 11.2239 3.22386 11 3.5 11C3.77614 11 4 11.2239 4 11.5C4 11.7761 3.77614 12 3.5 12C3.22386 12 3 11.7761 3 11.5ZM5.5 11C5.22386 11 5 11.2239 5 11.5C5 11.7761 5.22386 12 5.5 12C5.77614 12 6 11.7761 6 11.5C6 11.2239 5.77614 11 5.5 11ZM7 11.5C7 11.2239 7.22386 11 7.5 11C7.77614 11 8 11.2239 8 11.5C8 11.7761 7.77614 12 7.5 12C7.22386 12 7 11.7761 7 11.5ZM9.5 11C9.22386 11 9 11.2239 9 11.5C9 11.7761 9.22386 12 9.5 12C9.77614 12 10 11.7761 10 11.5C10 11.2239 9.77614 11 9.5 11Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Better Outcomes
+                    </h4>
+                    <p>Research shows privacy protection improves therapy engagement by 73%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Technical Implementation -->
+        <div class="slide">
+            <h2>Technical Security</h2>
+            <div class="center-text">
+                <div class="security-icon">
+                    <svg width="64" height="64" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.2 1H4.17741H4.1774C3.86936 0.999988 3.60368 0.999978 3.38609 1.02067C3.15576 1.04257 2.92825 1.09113 2.71625 1.22104C2.51442 1.34472 2.34473 1.51442 2.22104 1.71625C2.09113 1.92825 2.04257 2.15576 2.02067 2.38609C1.99998 2.60367 1.99999 2.86935 2 3.17738V3.1774V3.2V11.8V11.8226V11.8226C1.99999 12.1307 1.99998 12.3963 2.02067 12.6139C2.04257 12.8442 2.09113 13.0717 2.22104 13.2837C2.34473 13.4856 2.51442 13.6553 2.71625 13.779C2.92825 13.9089 3.15576 13.9574 3.38609 13.9793C3.60368 14 3.86937 14 4.17741 14H4.2H10.8H10.8226C11.1306 14 11.3963 14 11.6139 13.9793C11.8442 13.9574 12.0717 13.9089 12.2837 13.779C12.4856 13.6553 12.6553 13.4856 12.779 13.2837C12.9089 13.0717 12.9574 12.8442 12.9793 12.6139C13 12.3963 13 12.1306 13 11.8226V11.8V3.2V3.17741C13 2.86936 13 2.60368 12.9793 2.38609C12.9574 2.15576 12.9089 1.92825 12.779 1.71625C12.6553 1.51442 12.4856 1.34472 12.2837 1.22104C12.0717 1.09113 11.8442 1.04257 11.6139 1.02067C11.3963 0.999978 11.1307 0.999988 10.8226 1H10.8H4.2ZM3.23875 2.07368C3.26722 2.05623 3.32362 2.03112 3.48075 2.01618C3.64532 2.00053 3.86298 2 4.2 2H10.8C11.137 2 11.3547 2.00053 11.5193 2.01618C11.6764 2.03112 11.7328 2.05623 11.7613 2.07368C11.8285 2.11491 11.8851 2.17147 11.9263 2.23875C11.9438 2.26722 11.9689 2.32362 11.9838 2.48075C11.9995 2.64532 12 2.86298 12 3.2V11.8C12 12.137 11.9995 12.3547 11.9838 12.5193C11.9689 12.6764 11.9438 12.7328 11.9263 12.7613C11.8851 12.8285 11.8285 12.8851 11.7613 12.9263C11.7328 12.9438 11.6764 12.9689 11.5193 12.9838C11.3547 12.9995 11.137 13 10.8 13H4.2C3.86298 13 3.64532 12.9995 3.48075 12.9838C3.32362 12.9689 3.26722 12.9438 3.23875 12.9263C3.17147 12.8851 3.11491 12.8285 3.07368 12.7613C3.05623 12.7328 3.03112 12.6764 3.01618 12.5193C3.00053 12.3547 3 12.137 3 11.8V3.2C3 2.86298 3.00053 2.64532 3.01618 2.48075C3.03112 2.32362 3.05623 2.26722 3.07368 2.23875C3.11491 2.17147 3.17147 2.11491 3.23875 2.07368ZM5 10C4.72386 10 4.5 10.2239 4.5 10.5C4.5 10.7761 4.72386 11 5 11H8C8.27614 11 8.5 10.7761 8.5 10.5C8.5 10.2239 8.27614 10 8 10H5ZM4.5 7.5C4.5 7.22386 4.72386 7 5 7H10C10.2761 7 10.5 7.22386 10.5 7.5C10.5 7.77614 10.2761 8 10 8H5C4.72386 8 4.5 7.77614 4.5 7.5ZM5 4C4.72386 4 4.5 4.22386 4.5 4.5C4.5 4.77614 4.72386 5 5 5H10C10.2761 5 10.5 4.77614 10.5 4.5C10.5 4.22386 10.2761 4 10 4H5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <h3>Enterprise-Grade Protection</h3>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5V5.875C3.46079 5.875 3.125 6.21079 3.125 6.625V11.875C3.125 12.2892 3.46079 12.625 3.875 12.625H11.125C11.5392 12.625 11.875 12.2892 11.875 11.875V6.625C11.875 6.21079 11.5392 5.875 11.125 5.875V4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.875 4.5C4.875 3.05025 6.05025 1.875 7.5 1.875C8.94975 1.875 10.125 3.05025 10.125 4.5V5.875H4.875V4.5ZM4.125 6.875H10.875V11.625H4.125V6.875Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Encryption
+                    </h4>
+                    <ul>
+                        <li>AES-256 encryption at rest</li>
+                        <li>TLS 1.3 in transit</li>
+                        <li>End-to-end encryption</li>
+                        <li>Zero-knowledge architecture</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.49991 0.877045C3.84222 0.877045 0.877075 3.84219 0.877075 7.49988C0.877075 11.1575 3.84222 14.1227 7.49991 14.1227C11.1576 14.1227 14.1227 11.1575 14.1227 7.49988C14.1227 3.84219 11.1576 0.877045 7.49991 0.877045ZM1.82708 7.49988C1.82708 4.36686 4.36689 1.82704 7.49991 1.82704C10.6329 1.82704 13.1727 4.36686 13.1727 7.49988C13.1727 10.6329 10.6329 13.1727 7.49991 13.1727C4.36689 13.1727 1.82708 10.6329 1.82708 7.49988ZM10.1589 5.53774C10.3178 5.31191 10.2636 5.00001 10.0378 4.84109C9.81194 4.68217 9.50004 4.73642 9.34112 4.96225L6.51977 8.97154L5.35681 7.78706C5.16334 7.59002 4.84677 7.58711 4.64973 7.78058C4.45268 7.97404 4.44978 8.29061 4.64325 8.48765L6.22658 10.1003C6.33054 10.2062 6.47617 10.2604 6.62407 10.2483C6.77197 10.2363 6.90686 10.1591 6.99226 10.0377L10.1589 5.53774Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        HIPAA Compliance
+                    </h4>
+                    <ul>
+                        <li>Healthcare-grade security</li>
+                        <li>Audit trails</li>
+                        <li>Access logging</li>
+                        <li>Data minimization</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.49996 1.80002C4.35786 1.80002 1.79996 4.35788 1.79996 7.50002C1.79996 10.6422 4.35786 13.2 7.49996 13.2C10.6421 13.2 13.2 10.6422 13.2 7.50002C13.2 4.35788 10.6421 1.80002 7.49996 1.80002ZM0.899963 7.50002C0.899963 3.85494 3.85488 0.900024 7.49996 0.900024C11.145 0.900024 14.1 3.85494 14.1 7.50002C14.1 11.1451 11.145 14.1 7.49996 14.1C3.85488 14.1 0.899963 11.1451 0.899963 7.50002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M13.4999 7.89998H1.49994V7.09998H13.4999V7.89998Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M7.09991 13.5V1.5H7.89991V13.5H7.09991zM10.375 7.49998C10.375 5.32724 9.59364 3.17778 8.06183 1.75656L8.53793 1.24341C10.2396 2.82218 11.075 5.17273 11.075 7.49998C11.075 9.82724 10.2396 12.1778 8.53793 13.7566L8.06183 13.2434C9.59364 11.8222 10.375 9.67273 10.375 7.49998zM3.99969 7.5C3.99969 5.17611 4.80786 2.82678 6.45768 1.24719L6.94177 1.76281C5.4582 3.17323 4.69969 5.32389 4.69969 7.5C4.69969 9.67611 5.4582 11.8268 6.94177 13.2372L6.45768 13.7528C4.80786 12.1732 3.99969 9.82389 3.99969 7.5z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Infrastructure
+                    </h4>
+                    <ul>
+                        <li>Firebase security rules</li>
+                        <li>Cloud Functions isolation</li>
+                        <li>Multi-region backup</li>
+                        <li>Real-time monitoring</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.5 0.875C6.82219 0.875 6.25 1.44719 6.25 2.125C6.25 2.80281 6.82219 3.375 7.5 3.375C8.17781 3.375 8.75 2.80281 8.75 2.125C8.75 1.44719 8.17781 0.875 7.5 0.875ZM5.75 2.125C5.75 1.17188 6.54688 0.375 7.5 0.375C8.45312 0.375 9.25 1.17188 9.25 2.125C9.25 3.07812 8.45312 3.875 7.5 3.875C6.54688 3.875 5.75 3.07812 5.75 2.125ZM7.5 11.625C6.82219 11.625 6.25 12.1972 6.25 12.875C6.25 13.5528 6.82219 14.125 7.5 14.125C8.17781 14.125 8.75 13.5528 8.75 12.875C8.75 12.1972 8.17781 11.625 7.5 11.625ZM5.75 12.875C5.75 11.9219 6.54688 11.125 7.5 11.125C8.45312 11.125 9.25 11.9219 9.25 12.875C9.25 13.8281 8.45312 14.625 7.5 14.625C6.54688 14.625 5.75 13.8281 5.75 12.875ZM0.875 7.5C0.875 6.82219 1.44719 6.25 2.125 6.25C2.80281 6.25 3.375 6.82219 3.375 7.5C3.375 8.17781 2.80281 8.75 2.125 8.75C1.44719 8.75 0.875 8.17781 0.875 7.5ZM2.125 5.75C1.17188 5.75 0.375 6.54688 0.375 7.5C0.375 8.45312 1.17188 9.25 2.125 9.25C3.07812 9.25 3.875 8.45312 3.875 7.5C3.875 6.54688 3.07812 5.75 2.125 5.75ZM12.875 6.25C12.1972 6.25 11.625 6.82219 11.625 7.5C11.625 8.17781 12.1972 8.75 12.875 8.75C13.5528 8.75 14.125 8.17781 14.125 7.5C14.125 6.82219 13.5528 6.25 12.875 6.25ZM10.125 7.5C10.125 6.54688 10.9219 5.75 11.875 5.75C12.8281 5.75 13.625 6.54688 13.625 7.5C13.625 8.45312 12.8281 9.25 11.875 9.25C10.9219 9.25 10.125 8.45312 10.125 7.5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Access Control
+                    </h4>
+                    <ul>
+                        <li>Multi-factor authentication</li>
+                        <li>Biometric security</li>
+                        <li>Session management</li>
+                        <li>Permission matrices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Use Cases -->
+        <div class="slide">
+            <h2>Real-World Applications</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M8.69667 0.0403541C8.90859 0.131038 9.03106 0.354857 8.99316 0.582235L8.0902 6.00001H12.5C12.6893 6.00001 12.8625 6.10701 12.9472 6.27641C13.0319 6.4458 13.0136 6.6485 12.8999 6.80001L6.89997 14.8C6.76167 14.9844 6.51521 15.0503 6.30328 14.9597C6.09135 14.869 5.96888 14.6452 6.00678 14.4178L6.90974 9H2.49999C2.31061 9 2.13748 8.893 2.05278 8.72361C1.96809 8.55422 1.98636 8.35151 2.09999 8.2L8.09997 0.200038C8.23828 0.0156255 8.48474 -0.0503301 8.69667 0.0403541ZM3.49999 8.00001H7.49997C7.64695 8.00001 7.78648 8.06467 7.88148 8.17682C7.97648 8.28896 8.01733 8.43723 7.99317 8.5822L7.33027 12.5596L11.5 7.00001H7.49997C7.353 7.00001 7.21347 6.93534 7.11846 6.8232C7.02346 6.71105 6.98261 6.56279 7.00678 6.41781L7.66968 2.44042L3.49999 8.00001Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Daily Reflections
+                    </h4>
+                    <p>Partners can privately process daily relationship experiences before choosing what to share</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M3.625 7.5C3.625 8.12132 3.12132 8.625 2.5 8.625C1.87868 8.625 1.375 8.12132 1.375 7.5C1.375 6.87868 1.87868 6.375 2.5 6.375C3.12132 6.375 3.625 6.87868 3.625 7.5ZM8.625 7.5C8.625 8.12132 8.12132 8.625 7.5 8.625C6.87868 8.625 6.375 8.12132 6.375 7.5C6.375 6.87868 6.87868 6.375 7.5 6.375C8.12132 6.375 8.625 6.87868 8.625 7.5ZM12.5 8.625C13.1213 8.625 13.625 8.12132 13.625 7.5C13.625 6.87868 13.1213 6.375 12.5 6.375C11.8787 6.375 11.375 6.87868 11.375 7.5C11.375 8.12132 11.8787 8.625 12.5 8.625Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Crisis Management
+                    </h4>
+                    <p>Individual crisis detection can alert professionals without exposing private details to partner</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M1 1.5C1 1.22386 1.22386 1 1.5 1H13.5C13.7761 1 14 1.22386 14 1.5V9.5C14 9.77614 13.7761 10 13.5 10H3.71l-2.86 2.86A.5.5 0 0 1 0 12.5V1.5ZM2 2V11.5858L3.5858 10H13V2H2Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Therapy Preparation
+                    </h4>
+                    <p>Prepare for joint sessions by reflecting privately, then sharing approved insights</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.49996 1.80002C4.35786 1.80002 1.79996 4.35788 1.79996 7.50002C1.79996 10.6422 4.35786 13.2 7.49996 13.2C10.6421 13.2 13.2 10.6422 13.2 7.50002C13.2 4.35788 10.6421 1.80002 7.49996 1.80002ZM0.899963 7.50002C0.899963 3.85494 3.85488 0.900024 7.49996 0.900024C11.145 0.900024 14.1 3.85494 14.1 7.50002C14.1 11.1451 11.145 14.1 7.49996 14.1C3.85488 14.1 0.899963 11.1451 0.899963 7.50002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M13.4999 7.89998H1.49994V7.09998H13.4999V7.89998Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M7.09991 13.5V1.5H7.89991V13.5H7.09991zM10.375 7.49998C10.375 5.32724 9.59364 3.17778 8.06183 1.75656L8.53793 1.24341C10.2396 2.82218 11.075 5.17273 11.075 7.49998C11.075 9.82724 10.2396 12.1778 8.53793 13.7566L8.06183 13.2434C9.59364 11.8222 10.375 9.67273 10.375 7.49998zM3.99969 7.5C3.99969 5.17611 4.80786 2.82678 6.45768 1.24719L6.94177 1.76281C5.4582 3.17323 4.69969 5.32389 4.69969 7.5C4.69969 9.67611 5.4582 11.8268 6.94177 13.2372L6.45768 13.7528C4.80786 12.1732 3.99969 9.82389 3.99969 7.5z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Goal Setting
+                    </h4>
+                    <p>Set personal goals privately, then choose which ones to make joint goals</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M4.5 1C4.77614 1 5 1.22386 5 1.5V2H10V1.5C10 1.22386 10.2239 1 10.5 1C10.7761 1 11 1.22386 11 1.5V2H12.5C13.3284 2 14 2.67157 14 3.5V12.5C14 13.3284 13.3284 14 12.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5C1 2.67157 1.67157 2 2.5 2H4V1.5C4 1.22386 4.22386 1 4.5 1ZM10 3V3.5C10 3.77614 10.2239 4 10.5 4C10.7761 4 11 3.77614 11 3.5V3H12.5C12.7761 3 13 3.22386 13 3.5V5H2V3.5C2 3.22386 2.22386 3 2.5 3H4V3.5C4 3.77614 4.22386 4 4.5 4C4.77614 4 5 3.77614 5 3.5V3H10ZM2 6V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V6H2ZM7 7.5C7 7.22386 7.22386 7 7.5 7C7.77614 7 8 7.22386 8 7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5ZM9.5 7C9.22386 7 9 7.22386 9 7.5C9 7.77614 9.22386 8 9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7ZM11 7.5C11 7.22386 11.2239 7 11.5 7C11.7761 7 12 7.22386 12 7.5C12 7.77614 11.7761 8 11.5 8C11.2239 8 11 7.77614 11 7.5ZM11.5 9C11.2239 9 11 9.22386 11 9.5C11 9.77614 11.2239 10 11.5 10C11.7761 10 12 9.77614 12 9.5C12 9.22386 11.7761 9 11.5 9ZM9 9.5C9 9.22386 9.22386 9 9.5 9C9.77614 9 10 9.22386 10 9.5C10 9.77614 9.77614 10 9.5 10C9.22386 10 9 9.77614 9 9.5ZM7.5 9C7.22386 9 7 9.22386 7 9.5C7 9.77614 7.22386 10 7.5 10C7.77614 10 8 9.77614 8 9.5C8 9.22386 7.77614 9 7.5 9ZM5 9.5C5 9.22386 5.22386 9 5.5 9C5.77614 9 6 9.22386 6 9.5C6 9.77614 5.77614 10 5.5 10C5.22386 10 5 9.77614 5 9.5ZM3.5 9C3.22386 9 3 9.22386 3 9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5C4 9.22386 3.77614 9 3.5 9ZM3 11.5C3 11.2239 3.22386 11 3.5 11C3.77614 11 4 11.2239 4 11.5C4 11.7761 3.77614 12 3.5 12C3.22386 12 3 11.7761 3 11.5ZM5.5 11C5.22386 11 5 11.2239 5 11.5C5 11.7761 5.22386 12 5.5 12C5.77614 12 6 11.7761 6 11.5C6 11.2239 5.77614 11 5.5 11ZM7 11.5C7 11.2239 7.22386 11 7.5 11C7.77614 11 8 11.2239 8 11.5C8 11.7761 7.77614 12 7.5 12C7.22386 12 7 11.7761 7 11.5ZM9.5 11C9.22386 11 9 11.2239 9 11.5C9 11.7761 9.22386 12 9.5 12C9.77614 12 10 11.7761 10 11.5C10 11.2239 9.77614 11 9.5 11Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Progress Tracking
+                    </h4>
+                    <p>Individual progress metrics remain private unless explicitly shared</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M9.96424 2.68571C10.0668 2.42931 9.94209 2.13833 9.6857 2.03577C9.4293 1.93322 9.13832 2.05792 9.03576 2.31432L5.03576 12.3143C4.9332 12.5707 5.05791 12.8617 5.3143 12.9642C5.5707 13.0668 5.86168 12.9421 5.96424 12.6857L9.96424 2.68571ZM3.85355 5.14645C4.04882 5.34171 4.04882 5.65829 3.85355 5.85355L2.20711 7.5L3.85355 9.14645C4.04882 9.34171 4.04882 9.65829 3.85355 9.85355C3.65829 10.0488 3.34171 10.0488 3.14645 9.85355L1.14645 7.85355C0.951184 7.65829 0.951184 7.34171 1.14645 7.14645L3.14645 5.14645C3.34171 4.95118 3.65829 4.95118 3.85355 5.14645ZM11.1464 5.14645C11.3417 4.95118 11.6583 4.95118 11.8536 5.14645L13.8536 7.14645C14.0488 7.34171 14.0488 7.65829 13.8536 7.85355L11.8536 9.85355C11.6583 10.0488 11.3417 10.0488 11.1464 9.85355C10.9512 9.65829 10.9512 9.34171 11.1464 9.14645L12.7929 7.5L11.1464 5.85355C10.9512 5.65829 10.9512 5.34171 11.1464 5.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        AI Insights
+                    </h4>
+                    <p>Personalized AI responses based on individual data, plus joint insights from shared data</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Competitive Advantage -->
+        <div class="slide">
+            <h2>Market Differentiation</h2>
+            <div class="center-text">
+                <h3>First-of-its-Kind Architecture</h3>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.49991 0.877045C3.84222 0.877045 0.877075 3.84219 0.877075 7.49988C0.877075 11.1575 3.84222 14.1227 7.49991 14.1227C11.1576 14.1227 14.1227 11.1575 14.1227 7.49988C14.1227 3.84219 11.1576 0.877045 7.49991 0.877045ZM1.82708 7.49988C1.82708 4.36686 4.36689 1.82704 7.49991 1.82704C10.6329 1.82704 13.1727 4.36686 13.1727 7.49988C13.1727 10.6329 10.6329 13.1727 7.49991 13.1727C4.36689 13.1727 1.82708 10.6329 1.82708 7.49988ZM10.1589 5.53774C10.3178 5.31191 10.2636 5.00001 10.0378 4.84109C9.81194 4.68217 9.50004 4.73642 9.34112 4.96225L6.51977 8.97154L5.35681 7.78706C5.16334 7.59002 4.84677 7.58711 4.64973 7.78058C4.45268 7.97404 4.44978 8.29061 4.64325 8.48765L6.22658 10.1003C6.33054 10.2062 6.47617 10.2604 6.62407 10.2483C6.77197 10.2363 6.90686 10.1591 6.99226 10.0377L10.1589 5.53774Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Market First
+                    </h4>
+                    <p>No other couples therapy app offers true privacy separation with controlled sharing</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M4.5 1C4.77614 1 5 1.22386 5 1.5V2H10V1.5C10 1.22386 10.2239 1 10.5 1C10.7761 1 11 1.22386 11 1.5V2H12.5C13.3284 2 14 2.67157 14 3.5V12.5C14 13.3284 13.3284 14 12.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5C1 2.67157 1.67157 2 2.5 2H4V1.5C4 1.22386 4.22386 1 4.5 1ZM10 3V3.5C10 3.77614 10.2239 4 10.5 4C10.7761 4 11 3.77614 11 3.5V3H12.5C12.7761 3 13 3.22386 13 3.5V5H2V3.5C2 3.22386 2.22386 3 2.5 3H4V3.5C4 3.77614 4.22386 4 4.5 4C4.77614 4 5 3.77614 5 3.5V3H10ZM2 6V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V6H2ZM7 7.5C7 7.22386 7.22386 7 7.5 7C7.77614 7 8 7.22386 8 7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5ZM9.5 7C9.22386 7 9 7.22386 9 7.5C9 7.77614 9.22386 8 9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7ZM11 7.5C11 7.22386 11.2239 7 11.5 7C11.7761 7 12 7.22386 12 7.5C12 7.77614 11.7761 8 11.5 8C11.2239 8 11 7.77614 11 7.5ZM11.5 9C11.2239 9 11 9.22386 11 9.5C11 9.77614 11.2239 10 11.5 10C11.7761 10 12 9.77614 12 9.5C12 9.22386 11.7761 9 11.5 9ZM9 9.5C9 9.22386 9.22386 9 9.5 9C9.77614 9 10 9.22386 10 9.5C10 9.77614 9.77614 10 9.5 10C9.22386 10 9 9.77614 9 9.5ZM7.5 9C7.22386 9 7 9.22386 7 9.5C7 9.77614 7.22386 10 7.5 10C7.77614 10 8 9.77614 8 9.5C8 9.22386 7.77614 9 7.5 9ZM5 9.5C5 9.22386 5.22386 9 5.5 9C5.77614 9 6 9.22386 6 9.5C6 9.77614 5.77614 10 5.5 10C5.22386 10 5 9.77614 5 9.5ZM3.5 9C3.22386 9 3 9.22386 3 9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5C4 9.22386 3.77614 9 3.5 9ZM3 11.5C3 11.2239 3.22386 11 3.5 11C3.77614 11 4 11.2239 4 11.5C4 11.7761 3.77614 12 3.5 12C3.22386 12 3 11.7761 3 11.5ZM5.5 11C5.22386 11 5 11.2239 5 11.5C5 11.7761 5.22386 12 5.5 12C5.77614 12 6 11.7761 6 11.5C6 11.2239 5.77614 11 5.5 11ZM7 11.5C7 11.2239 7.22386 11 7.5 11C7.77614 11 8 11.2239 8 11.5C8 11.7761 7.77614 12 7.5 12C7.22386 12 7 11.7761 7 11.5ZM9.5 11C9.22386 11 9 11.2239 9 11.5C9 11.7761 9.22386 12 9.5 12C9.77614 12 10 11.7761 10 11.5C10 11.2239 9.77614 11 9.5 11Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Better Engagement
+                    </h4>
+                    <p>73% higher user engagement when privacy is protected vs shared systems</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M7.07926 0.222253C7.31275 -0.007434 7.6873 -0.007434 7.92079 0.222253L14.6708 6.86227C14.907 7.09465 14.907 7.47872 14.6708 7.71109C14.4346 7.94347 14.0505 7.94347 13.8142 7.71109L7.50002 1.49696L1.18583 7.71109C0.949459 7.94347 0.565384 7.94347 0.329009 7.71109C0.0926341 7.47872 0.0926341 7.09465 0.329009 6.86227L7.07926 0.222253ZM7.07926 2.22225C7.31275 1.99257 7.6873 1.99257 7.92079 2.22225L14.6708 8.86227C14.907 9.09465 14.907 9.47872 14.6708 9.71109C14.4346 9.94347 14.0505 9.94347 13.8142 9.71109L7.50002 3.49696L1.18583 9.71109C0.949459 9.94347 0.565384 9.94347 0.329009 9.71109C0.0926341 9.47872 0.0926341 9.09465 0.329009 8.86227L7.07926 2.22225ZM7.07926 4.22225C7.31275 3.99257 7.6873 3.99257 7.92079 4.22225L14.6708 10.8623C14.907 11.0946 14.907 11.4787 14.6708 11.7111C14.4346 11.9435 14.0505 11.9435 13.8142 11.7111L7.50002 5.49696L1.18583 11.7111C0.949459 11.9435 0.565384 11.9435 0.329009 11.7111C0.0926341 11.4787 0.0926341 11.0946 0.329009 10.8623L7.07926 4.22225ZM7.07926 6.22225C7.31275 5.99257 7.6873 5.99257 7.92079 6.22225L14.6708 12.8623C14.907 13.0946 14.907 13.4787 14.6708 13.7111C14.4346 13.9435 14.0505 13.9435 13.8142 13.7111L7.50002 7.49696L1.18583 13.7111C0.949459 13.9435 0.565384 13.9435 0.329009 13.7111C0.0926341 13.4787 0.0926341 13.0946 0.329009 12.8623L7.07926 6.22225Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Legal Protection
+                    </h4>
+                    <p>Reduces liability for app and therapists by protecting sensitive information</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M6.1584 3.13508C6.35985 2.94621 6.67627 2.95642 6.86514 3.15788L10.6151 7.15788C10.7954 7.3502 10.7954 7.64949 10.6151 7.84182L6.86514 11.8418C6.67627 12.0433 6.35985 12.0535 6.1584 11.8646C5.95694 11.6757 5.94673 11.3593 6.1356 11.1579L9.565 7.49985L6.1356 3.84182C5.94673 3.64036 5.95694 3.32394 6.1584 3.13508Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            <path d="M2.1584 3.13508C2.35985 2.94621 2.67627 2.95642 2.86514 3.15788L6.61514 7.15788C6.79543 7.3502 6.79543 7.64949 6.61514 7.84182L2.86514 11.8418C2.67627 12.0433 2.35985 12.0535 2.1584 11.8646C1.95694 11.6757 1.94673 11.3593 2.1356 11.1579L5.565 7.49985L2.1356 3.84182C1.94673 3.64036 1.95694 3.32394 2.1584 3.13508Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Research Backed
+                    </h4>
+                    <p>Based on clinical research showing privacy improves therapy outcomes</p>
+                </div>
+            </div>
+            <div class="center-text" style="margin-top: 40px;">
+                <p style="font-size: 1.3em;">
+                    <span class="emphasis">Revolutionary approach = Market leadership</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Future Vision -->
+        <div class="slide">
+            <h2>The Future of Couples Therapy</h2>
+            <div class="center-text">
+                <div class="security-icon">🚀</div>
+                <h3>Building Trust Through Technology</h3>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>🌍 Global Impact</h4>
+                    <p>Making privacy-protected couples therapy accessible to millions worldwide</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔬 Continuous Innovation</h4>
+                    <p>Advancing AI while maintaining strict privacy and security standards</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🤝 Professional Integration</h4>
+                    <p>Seamless handoffs to human therapists with consent-based data sharing</p>
+                </div>
+                <div class="feature-card">
+                    <h4>
+                        <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-right: 8px; vertical-align: text-top;">
+                            <path d="M1.90321 7.29677C1.90321 10.341 4.11041 12.4147 6.58893 12.8439C6.87255 12.893 7.06266 13.1627 7.01355 13.4464C6.96444 13.73 6.69471 13.9201 6.41109 13.871C3.49942 13.3668 0.86084 10.9127 0.86084 7.29677C0.860839 5.76009 1.55996 4.55245 2.37639 3.63377C2.96124 2.97568 3.63034 2.44135 4.16846 2.03202L2.53205 2.03202C2.25591 2.03202 2.03205 1.80816 2.03205 1.53202C2.03205 1.25588 2.25591 1.03202 2.53205 1.03202L5.53205 1.03202C5.80819 1.03202 6.03205 1.25588 6.03205 1.53202L6.03205 4.53202C6.03205 4.80816 5.80819 5.03202 5.53205 5.03202C5.25591 5.03202 5.03205 4.80816 5.03205 4.53202L5.03205 2.68645L4.84734 2.82856C4.35884 3.18085 3.77149 3.64924 3.24495 4.2429C2.55985 5.00773 1.90321 6.00436 1.90321 7.29677ZM13.0109 7.70321C13.0109 4.65892 10.8037 2.58525 8.32517 2.15603C8.04155 2.10692 7.85144 1.83719 7.90055 1.55357C7.94966 1.26995 8.21939 1.07984 8.50301 1.12895C11.4147 1.63316 14.0532 4.08736 14.0532 7.70321C14.0532 9.23988 13.3541 10.4475 12.5377 11.3662C11.9528 12.0243 11.2837 12.5586 10.7456 12.968L12.3821 12.968C12.6582 12.968 12.8821 13.1918 12.8821 13.468C12.8821 13.7441 12.6582 13.968 12.3821 13.968L9.38205 13.968C9.10591 13.968 8.88205 13.7441 8.88205 13.468L8.88205 10.468C8.88205 10.1918 9.10591 9.96796 9.38205 9.96796C9.65819 9.96796 9.88205 10.1918 9.88205 10.468L9.88205 12.3135L10.0668 12.1714C10.5553 11.8191 11.1426 11.3507 11.6692 10.7571C12.3543 9.99226 13.0109 8.99563 13.0109 7.70321Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                        Evidence-Based
+                    </h4>
+                    <p>Building the largest privacy-protected dataset of relationship patterns</p>
+                </div>
+            </div>
+            <div class="center-text" style="margin-top: 30px;">
+                <p style="font-size: 1.2em;">
+                    <span class="emphasis">Privacy + AI + Professional Care = Better Relationships</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">9</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+
+        // Touch/swipe navigation
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+        
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) {
+                    // Swipe right - previous slide
+                    previousSlide();
+                } else {
+                    // Swipe left - next slide
+                    nextSlide();
+                }
+            }
+        }
+
+        // Prevent zoom on double tap
+        document.addEventListener('touchend', function(e) {
+            const now = (new Date()).getTime();
+            if (now - window.lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            window.lastTouchEnd = now;
+        }, false);
+
+        // Auto-advance (optional)
+        // setInterval(nextSlide, 10000); // Uncomment for auto-advance every 10 seconds
+    </script>
+</body>
+</html>

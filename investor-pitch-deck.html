@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherWe - Interactive Pitch Deck</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .deck-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), transparent);
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .slide-number {
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: #94a3b8;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #a855f7, #3b82f6);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .expandable-section {
+            margin: 40px 0;
+        }
+
+        .section-button {
+            display: block;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-button:hover {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Enhanced Calculator Styles */
+        .calculator-section {
+            background: linear-gradient(135deg, #55efc4, #00b894);
+            color: white;
+            border-radius: 25px;
+            padding: 50px;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calculator-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .calculator-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .calculator-inputs {
+            background: rgba(255,255,255,0.15);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px);
+        }
+        
+        .input-group {
+            margin-bottom: 30px;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            transform: scale(1.02);
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .calculator-results {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px);
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 15px;
+        }
+        
+        .result-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+        
+        .result-highlight {
+            background: rgba(255,255,255,0.2);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 25px 0;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .big-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        /* Popup Modal Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: #333;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .popup-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        /* Feature grid for popup content */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: rgba(168, 85, 247, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* ROI Calculator Specific Styles */
+        .roi-results {
+            display: none;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 30px auto;
+            display: block;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            h1 { font-size: 3rem; }
+            h2 { font-size: 2.2rem; }
+            .calculator-title { font-size: 2rem; }
+            
+            .slide {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="deck-container">
+        <!-- Slide 1: Title -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">01</div>
+                <h1>TogetherWe</h1>
+                <p class="subtitle">AI-Powered Couples Counseling</p>
+                <p class="tagline">Making Professional Relationship Support Accessible 24/7</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">67%</div>
+                    <div class="stat-label">of couples can't afford therapy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">cost reduction vs traditional</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">availability for crisis support</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: The Problem -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">02</div>
+                <h2>The Mental Health Crisis in Relationships</h2>
+            </div>
+
+            <div class="expandable-section">
+                <button class="section-button" onclick="openPopup('problem-massive')">
+                    Massive Market Pain: Cost & Accessibility Barriers
+                </button>
+                
+                <button class="section-button" onclick="openPopup('problem-human')">
+                    The Human Cost: 12M Couples Seeking Help Annually
+                </button>
+                
+                <button class="section-button" onclick="openPopup('problem-stats')">
+                    Key Statistics: Market Research & Pain Points
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Revenue Calculator -->
+        <div class="slide">
+            <div class="slide-number">3</div>
+            <div class="slide-title" style="text-align: center; margin-bottom: 20px; font-size: 2.5rem; color: #fff;">Revenue Calculator</div>
+            <div class="slide-subtitle" style="text-align: center; color: #94a3b8; margin-bottom: 40px;">Interactive model - adjust parameters to see returns</div>
+            
+            <div class="calculator-section">
+                <div class="calculator-title">💰 Revenue & Returns Calculator</div>
+                
+                <div class="calculator-grid">
+                    <div class="calculator-inputs">
+                        <h3 style="margin-bottom: 25px; font-size: 1.4rem; position: relative; z-index: 2;">📊 Input Parameters</h3>
+                        
+                        <div class="input-group">
+                            <label class="input-label">US Couples Seeking Help (millions)</label>
+                            <input type="range" id="aduSlider" class="slider" min="5" max="47" value="15" step="1">
+                            <input type="number" id="aduInput" class="input-field" value="15" min="5" max="47">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Average Revenue Per User/Month ($)</label>
+                            <input type="range" id="monthlySlider" class="slider" min="12" max="89" value="28" step="2">
+                            <input type="number" id="monthlyInput" class="input-field" value="28" min="12" max="89">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Customer Retention Rate (%)</label>
+                            <input type="range" id="retentionSlider" class="slider" min="40" max="95" value="78" step="2">
+                            <input type="number" id="retentionInput" class="input-field" value="78" min="40" max="95">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Market Capture Rate (%)</label>
+                            <input type="range" id="penetrationSlider" class="slider" min="0.5" max="15" value="3.2" step="0.1">
+                            <input type="number" id="penetrationInput" class="input-field" value="3.2" min="0.5" max="15" step="0.1">
+                        </div>
+                    </div>
+                    
+                    <div class="calculator-results">
+                        <h3 style="margin-bottom: 25px; font-size: 1.4rem;">🎯 Results</h3>
+                        
+                        <div class="result-item">
+                            <span class="result-label">Target Couples</span>
+                            <span class="result-value" id="targetUsers">480K</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <span class="result-label">Monthly Revenue</span>
+                            <span class="result-value" id="monthlyRevenue">$13.4M</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <span class="result-label">Annual Revenue</span>
+                            <span class="result-value" id="annualRevenue">$161M</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <span class="result-label">Customer LTV</span>
+                            <span class="result-value" id="customerLTV">$696</span>
+                        </div>
+                        
+                        <div class="result-highlight">
+                            <div class="big-number" id="totalMarketValue">$15.8B</div>
+                            <div>Total Addressable Market</div>
+                        </div>
+                        
+                        <div class="result-highlight" style="background: rgba(255,215,0,0.3); margin-top: 20px;">
+                            <div class="big-number" id="investorReturn" style="font-size: 2.8rem;">38.7x</div>
+                            <div style="font-weight: 600;">Projected ROI Multiple</div>
+                            <div id="roi-description" style="font-size: 0.95rem; margin-top: 8px; opacity: 0.8;">
+                                Based on $250K seed investment at 6x revenue multiple
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Solution -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">04</div>
+                <h2>AI-Powered Daily Couples Therapy</h2>
+            </div>
+
+            <div class="expandable-section">
+                <button class="section-button" onclick="openPopup('solution-approach')">
+                    Revolutionary Approach: Daily Personalized Content
+                </button>
+                
+                <button class="section-button" onclick="openPopup('solution-features')">
+                    Key Features: Crisis Intervention & 24/7 Support
+                </button>
+                
+                <button class="section-button" onclick="openPopup('solution-tech')">
+                    Technology Stack: AI Engines & Clinical Validation
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Business Model -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">05</div>
+                <h2>Subscription-Based Revenue Model</h2>
+            </div>
+
+            <div class="expandable-section">
+                <button class="section-button" onclick="openPopup('business-model')">
+                    Three-Tier Subscription Model: $9.99 to $29.99/month
+                </button>
+                
+                <button class="section-button" onclick="openPopup('business-economics')">
+                    Unit Economics: 14.4:1 LTV/CAC Ratio
+                </button>
+                
+                <button class="section-button" onclick="openPopup('business-projections')">
+                    Financial Projections: Path to $500K ARR
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Market Opportunity -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">06</div>
+                <h2>$19.7B Market Opportunity</h2>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">47M</div>
+                    <div class="stat-label">US couples seeking help</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$19.7B</div>
+                    <div class="stat-label">total addressable market</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">month first-mover advantage</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Competition -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">07</div>
+                <h2>Competitive Landscape Analysis</h2>
+            </div>
+
+            <div class="expandable-section">
+                <button class="section-button" onclick="openPopup('competition-analysis')">
+                    Market Analysis: BetterHelp, Couples vs Traditional
+                </button>
+                
+                <button class="section-button" onclick="openPopup('competition-advantages')">
+                    Competitive Advantages: AI-First, Daily Engagement
+                </button>
+                
+                <button class="section-button" onclick="openPopup('competition-strategy')">
+                    Go-to-Market Strategy: Social Media & Content Marketing
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Team -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">08</div>
+                <h2>Experienced Team & Advisory Board</h2>
+            </div>
+
+            <div class="expandable-section">
+                <button class="section-button" onclick="openPopup('team-founding')">
+                    Founding Team: Clinical + Technical Expertise
+                </button>
+                
+                <button class="section-button" onclick="openPopup('team-ai')">
+                    AI Development Approach: Claude AI & GitHub Copilot
+                </button>
+                
+                <button class="section-button" onclick="openPopup('team-advisory')">
+                    Advisory Board: Licensed Therapists & Tech Veterans
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Funding Request -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">09</div>
+                <h2>$250K Seed Round for Market Validation</h2>
+            </div>
+
+            <div class="expandable-section">
+                <button class="section-button" onclick="openPopup('funding-breakdown')">
+                    Use of Funds: Product 40%, Validation 30%, Team 20%
+                </button>
+                
+                <button class="section-button" onclick="openPopup('funding-milestones')">
+                    Key Milestones: 500 Beta Users to Series A Readiness
+                </button>
+                
+                <button class="section-button" onclick="openPopup('funding-timeline')">
+                    Investment Timeline: 30-Day Close, 12-18 Month Series A
+                </button>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-number">10</div>
+                <h2>Ready to Transform Relationship Healthcare</h2>
+            </div>
+
+            <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+                <h3 style="margin-bottom: 30px; font-size: 1.8rem;">
+                    "Making professional relationship support accessible to every couple, 24/7, at a fraction of traditional therapy costs."
+                </h3>
+                
+                <div class="stats-grid" style="margin: 50px 0;">
+                    <div class="stat-card">
+                        <div class="stat-number">🚀</div>
+                        <div class="stat-label">First-mover advantage in AI couples therapy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">💡</div>
+                        <div class="stat-label">Proven team with clinical expertise</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">📈</div>
+                        <div class="stat-label">Clear path to Series A in 18 months</div>
+                    </div>
+                </div>
+                
+                <p style="font-size: 1.2rem; color: #94a3b8; margin-bottom: 40px;">
+                    Contact us to learn more about our AI-powered couples therapy platform.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="popup-overlay" id="popup-overlay" onclick="closePopup(event)">
+        <div class="popup-content">
+            <button class="popup-close" onclick="closePopup()">&times;</button>
+            <div id="popup-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Popup content data
+        const popupContent = {
+            'problem-massive': {
+                title: 'Massive Market Pain: Cost & Accessibility Barriers',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">💰</div>
+                            <h4>Cost Barriers</h4>
+                            <p>Traditional couples therapy costs $100-200/session, requiring 10-20 sessions minimum. Total cost: $1,000-4,000 per couple.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📅</div>
+                            <h4>Accessibility Issues</h4>
+                            <p>Average wait time for couples therapy: 3-6 weeks. 67% of couples can't access therapy when they need it most.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⏰</div>
+                            <h4>Crisis Response Gap</h4>
+                            <p>Relationship crises happen at 2am, weekends, holidays. Traditional therapy operates 9-5, Monday-Friday.</p>
+                        </div>
+                    </div>
+                `
+            },
+            'problem-human': {
+                title: 'The Human Cost: 12M Couples Seeking Help Annually',
+                content: `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">50%</div>
+                            <div class="stat-label">divorce rate in the US</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">12M</div>
+                            <div class="stat-label">couples seeking help annually</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">85%</div>
+                            <div class="stat-label">of relationship conflicts go unresolved</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 30px; font-size: 1.1rem; line-height: 1.6;">
+                        Every day that couples wait for help, relationships deteriorate. Our AI-powered daily check-ins catch problems 
+                        early, preventing the escalation that leads to permanent relationship damage.
+                    </p>
+                `
+            },
+            'problem-stats': {
+                title: 'Key Statistics: Market Research & Pain Points',
+                content: `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">47M</div>
+                            <div class="stat-label">US couples in committed relationships</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">3.2M</div>
+                            <div class="stat-label">couples receive professional help annually</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">$1,800</div>
+                            <div class="stat-label">average therapy cost ($150/session × 12 sessions)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">74%</div>
+                            <div class="stat-label">of couples report wanting relationship improvement</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">23%</div>
+                            <div class="stat-label">can afford traditional therapy costs</div>
+                        </div>
+                    </div>
+                `
+            },
+            'solution-approach': {
+                title: 'Revolutionary Approach: Daily Personalized Content',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🤖</div>
+                            <h4>AI-Powered Personalization</h4>
+                            <p>20 specialized AI engines analyze couple dynamics and deliver personalized therapeutic content daily.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📱</div>
+                            <h4>Mobile-First Experience</h4>
+                            <p>Native iOS/Android apps with push notifications, voice notes, and partner synchronization features.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔒</div>
+                            <h4>Privacy & Security</h4>
+                            <p>HIPAA-compliant infrastructure with end-to-end encryption and optional anonymous usage modes.</p>
+                        </div>
+                    </div>
+                `
+            },
+            'solution-features': {
+                title: 'Key Features: Crisis Intervention & 24/7 Support',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h4>Real-time Conflict Prediction</h4>
+                            <p>Early warning system with predictive analytics</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🆘</div>
+                            <h4>24/7 Crisis Intervention</h4>
+                            <p>Licensed therapist escalation available around the clock</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📝</div>
+                            <h4>Daily Relationship Check-ins</h4>
+                            <p>Personalized feedback and progress tracking</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💬</div>
+                            <h4>Couples Exercises</h4>
+                            <p>Communication tools and relationship building activities</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h4>Progress Tracking</h4>
+                            <p>Relationship health metrics and improvement analytics</p>
+                        </div>
+                    </div>
+                `
+            },
+            'solution-tech': {
+                title: 'Technology Stack: AI Engines & Clinical Validation',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🧠</div>
+                            <h4>20 Specialized AI Therapeutic Engines</h4>
+                            <p>Each engine focuses on specific relationship dynamics and therapeutic approaches</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✅</div>
+                            <h4>Clinical Content Validation</h4>
+                            <p>All content validated by licensed therapists for therapeutic efficacy</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚛️</div>
+                            <h4>React Native Mobile Apps</h4>
+                            <p>Cross-platform mobile experience with Firebase backend</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔐</div>
+                            <h4>HIPAA-Compliant Infrastructure</h4>
+                            <p>Enterprise-grade security and privacy compliance</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🌐</div>
+                            <h4>Professional Therapy Integration</h4>
+                            <p>Seamless connection with licensed therapist networks</p>
+                        </div>
+                    </div>
+                `
+            },
+            'business-model': {
+                title: 'Three-Tier Subscription Model: $9.99 to $29.99/month',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🆓</div>
+                            <h4>Freemium (Free)</h4>
+                            <p>Basic daily check-ins, relationship assessment, and crisis detection with professional referrals.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⭐</div>
+                            <h4>Premium ($19.99/month)</h4>
+                            <p>Advanced AI insights, couples exercises, progress tracking, and 24/7 crisis intervention.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👥</div>
+                            <h4>Professional ($29.99/month)</h4>
+                            <p>Licensed therapist consultations, advanced analytics, and integration with professional therapy.</p>
+                        </div>
+                    </div>
+                `
+            },
+            'business-economics': {
+                title: 'Unit Economics: 14.4:1 LTV/CAC Ratio',
+                content: `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">$28</div>
+                            <div class="stat-label">Average Revenue Per User/month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">$25</div>
+                            <div class="stat-label">Customer Acquisition Cost</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">$360</div>
+                            <div class="stat-label">Lifetime Value (based on 78% retention)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">14.4:1</div>
+                            <div class="stat-label">LTV/CAC Ratio</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">85%</div>
+                            <div class="stat-label">Gross Margin</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">5%</div>
+                            <div class="stat-label">Monthly Churn Rate</div>
+                        </div>
+                    </div>
+                `
+            },
+            'business-projections': {
+                title: 'Financial Projections: Path to $500K ARR',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">📅</div>
+                            <h4>Month 1</h4>
+                            <p>75 users, $750 MRR</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📈</div>
+                            <h4>Month 6</h4>
+                            <p>1,200 users, $13,500 MRR</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🎯</div>
+                            <h4>Month 12</h4>
+                            <p>3,500 users, $42,000 MRR</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🚀</div>
+                            <h4>Year 1 ARR</h4>
+                            <p>$504K with 75% free to paid conversion rate</p>
+                        </div>
+                    </div>
+                `
+            },
+            'competition-analysis': {
+                title: 'Market Analysis: BetterHelp, Couples vs Traditional',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">💊</div>
+                            <h4>BetterHelp</h4>
+                            <p>$80/week individual therapy, no couples focus</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🏥</div>
+                            <h4>Traditional Couples Therapy</h4>
+                            <p>$150/session, limited availability</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📱</div>
+                            <h4>Relationship Apps</h4>
+                            <p>Basic exercises, no AI personalization</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h4>Our Advantage</h4>
+                            <p>AI-powered daily engagement at fraction of cost</p>
+                        </div>
+                    </div>
+                `
+            },
+            'competition-advantages': {
+                title: 'Competitive Advantages: AI-First, Daily Engagement',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🥇</div>
+                            <h4>First AI-Powered Platform</h4>
+                            <p>First-mover advantage in AI couples therapy space</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📅</div>
+                            <h4>Daily Engagement</h4>
+                            <p>Daily vs weekly/monthly traditional sessions</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔮</div>
+                            <h4>Crisis Prediction</h4>
+                            <p>Early intervention before problems escalate</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💰</div>
+                            <h4>95% Cost Reduction</h4>
+                            <p>Dramatically lower cost than traditional therapy</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⏰</div>
+                            <h4>24/7 Availability</h4>
+                            <p>Mobile-first design with round-the-clock support</p>
+                        </div>
+                    </div>
+                `
+            },
+            'competition-strategy': {
+                title: 'Go-to-Market Strategy: Social Media & Content Marketing',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">📱</div>
+                            <h4>TikTok and Instagram</h4>
+                            <p>Relationship content and viral marketing campaigns</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👥</div>
+                            <h4>Influencer Partnerships</h4>
+                            <p>Collaborations with relationship coaches and experts</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔍</div>
+                            <h4>SEO Content Marketing</h4>
+                            <p>Optimized relationship advice content for organic growth</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🆓</div>
+                            <h4>Freemium Model</h4>
+                            <p>Free tier for viral growth and user acquisition</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🤝</div>
+                            <h4>Professional Networks</h4>
+                            <p>Partnerships with licensed therapist networks</p>
+                        </div>
+                    </div>
+                `
+            },
+            'team-founding': {
+                title: 'Founding Team: Clinical + Technical Expertise',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">👨‍💼</div>
+                            <h4>Founder/CEO</h4>
+                            <p>Product vision, AI development, startup scaling experience</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👩‍⚕️</div>
+                            <h4>Licensed Clinical Director</h4>
+                            <p>Marriage & Family Therapist, 10+ years couples therapy, crisis intervention specialist</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👨‍💻</div>
+                            <h4>Senior Mobile Developer</h4>
+                            <p>React Native/Firebase expertise, healthcare app development, HIPAA compliance</p>
+                        </div>
+                    </div>
+                `
+            },
+            'team-ai': {
+                title: 'AI Development Approach: Claude AI & GitHub Copilot',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🧠</div>
+                            <h4>Claude AI Integration</h4>
+                            <p>Advanced therapeutic content generation and validation</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h4>GitHub Copilot</h4>
+                            <p>Accelerated development cycles and code optimization</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✅</div>
+                            <h4>Clinical Oversight</h4>
+                            <p>Licensed therapist validation for all AI-generated content</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📚</div>
+                            <h4>Continuous Learning</h4>
+                            <p>AI models improve through user interactions and feedback</p>
+                        </div>
+                    </div>
+                `
+            },
+            'team-advisory': {
+                title: 'Advisory Board: Licensed Therapists & Tech Veterans',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">👥</div>
+                            <h4>3 Licensed MFTs</h4>
+                            <p>Marriage & Family Therapists providing clinical guidance</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚙️</div>
+                            <h4>Healthcare Tech VP</h4>
+                            <p>Former VP Engineering at successful healthcare startup</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🧠</div>
+                            <h4>Clinical Psychologist</h4>
+                            <p>Specialist in couples therapy and relationship dynamics</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📱</div>
+                            <h4>Mobile App Expert</h4>
+                            <p>Mobile app monetization and user engagement specialist</p>
+                        </div>
+                    </div>
+                `
+            },
+            'funding-breakdown': {
+                title: 'Use of Funds: Product 40%, Validation 30%, Team 20%',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">💻</div>
+                            <h4>Product Development (40% - $100K)</h4>
+                            <p>Mobile app development, AI engine refinement, clinical content creation, HIPAA compliance</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h4>Market Validation (30% - $75K)</h4>
+                            <p>Beta user acquisition, clinical efficacy studies, UX optimization</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👥</div>
+                            <h4>Team Expansion (20% - $50K)</h4>
+                            <p>Licensed therapist network, technical advisors, part-time marketing</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📈</div>
+                            <h4>Operations (10% - $25K)</h4>
+                            <p>Legal compliance, cloud infrastructure, customer acquisition</p>
+                        </div>
+                    </div>
+                `
+            },
+            'funding-milestones': {
+                title: 'Key Milestones: 500 Beta Users to Series A Readiness',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">📅</div>
+                            <h4>Month 3</h4>
+                            <p>100 beta users, product validation</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h4>Month 6</h4>
+                            <p>500 beta users, clinical efficacy data</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🚀</div>
+                            <h4>Month 9</h4>
+                            <p>App store launch, 1,000+ users</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💰</div>
+                            <h4>Month 12</h4>
+                            <p>$42K MRR, Series A readiness</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📈</div>
+                            <h4>Month 18</h4>
+                            <p>$150K MRR, Series A raise</p>
+                        </div>
+                    </div>
+                `
+            },
+            'funding-timeline': {
+                title: 'Investment Timeline: 30-Day Close, 12-18 Month Series A',
+                content: `
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🤝</div>
+                            <h4>Week 1-2</h4>
+                            <p>Initial investor meetings and interest</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📋</div>
+                            <h4>Week 3-4</h4>
+                            <p>Due diligence and term sheet negotiations</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✅</div>
+                            <h4>Month 1</h4>
+                            <p>Close $250K seed round</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🚀</div>
+                            <h4>Months 1-12</h4>
+                            <p>Execute product roadmap and user growth</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💼</div>
+                            <h4>Months 12-18</h4>
+                            <p>Series A fundraising and scaling</p>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        // Revenue Calculator Functions
+        function synchronizeInputs(sliderId, inputId) {
+            const slider = document.getElementById(sliderId);
+            const input = document.getElementById(inputId);
+            
+            if (slider && input) {
+                slider.addEventListener('input', () => {
+                    input.value = slider.value;
+                    calculateRevenue();
+                });
+                
+                input.addEventListener('input', () => {
+                    const value = parseFloat(input.value);
+                    if (!isNaN(value) && value >= parseFloat(input.min) && value <= parseFloat(input.max)) {
+                        slider.value = value;
+                        calculateRevenue();
+                    }
+                });
+            }
+        }
+
+        function calculateRevenue() {
+            const couplesValue = parseFloat(document.getElementById('aduInput').value);
+            const arpuValue = parseFloat(document.getElementById('monthlyInput').value);
+            const retentionValue = parseFloat(document.getElementById('retentionInput').value);
+            const captureValue = parseFloat(document.getElementById('penetrationInput').value);
+
+            // Calculate key metrics
+            const targetCouples = (couplesValue * captureValue / 100);
+            const monthlyRevenue = targetCouples * arpuValue * 1000000; // Convert millions to actual value
+            const annualRevenue = monthlyRevenue * 12;
+            
+            // Calculate LTV based on retention rate (higher retention = longer lifetime)
+            const averageLifetimeMonths = retentionValue < 50 ? 8 : 
+                                        retentionValue < 70 ? 18 :
+                                        retentionValue < 85 ? 32 : 48;
+            const customerLTV = arpuValue * averageLifetimeMonths * (retentionValue / 100);
+            
+            // Total addressable market calculation - using the input couples value
+            const totalMarketValue = couplesValue * 1000000 * arpuValue * 12; // Convert to actual dollars
+            
+            // Calculate realistic investor returns
+            const yearThreeRevenue = annualRevenue * Math.pow(1.35, 3); // 35% annual growth for 3 years
+            const revenueMultiple = annualRevenue > 100000000 ? 8 : annualRevenue > 50000000 ? 6 : 4;
+            const totalInvestment = 250000; // $250K seed investment
+            const exitValuation = yearThreeRevenue * revenueMultiple;
+            const investorReturn = exitValuation / totalInvestment;
+
+            // Update display with better formatting
+            document.getElementById('targetUsers').textContent = targetCouples >= 1 ? 
+                targetCouples.toFixed(1) + 'M' : (targetCouples * 1000).toFixed(0) + 'K';
+            document.getElementById('monthlyRevenue').textContent = '$' + 
+                (monthlyRevenue >= 1000000000 ? (monthlyRevenue/1000000000).toFixed(1) + 'B' : 
+                 monthlyRevenue >= 1000000 ? (monthlyRevenue/1000000).toFixed(1) + 'M' : 
+                 (monthlyRevenue/1000).toFixed(0) + 'K');
+            document.getElementById('annualRevenue').textContent = '$' + 
+                (annualRevenue >= 1000000000 ? (annualRevenue/1000000000).toFixed(1) + 'B' : 
+                 annualRevenue >= 1000000 ? (annualRevenue/1000000).toFixed(0) + 'M' : 
+                 (annualRevenue/1000).toFixed(0) + 'K');
+            document.getElementById('customerLTV').textContent = '$' + customerLTV.toFixed(0);
+            document.getElementById('totalMarketValue').textContent = '$' + 
+                (totalMarketValue >= 1000000000 ? (totalMarketValue/1000000000).toFixed(1) + 'B' : 
+                 (totalMarketValue/1000000).toFixed(0) + 'M');
+            
+            // Format investor return with more detail
+            if (investorReturn >= 1000) {
+                document.getElementById('investorReturn').textContent = (investorReturn/1000).toFixed(1) + 'K x';
+            } else {
+                document.getElementById('investorReturn').textContent = investorReturn.toFixed(1) + 'x';
+            }
+            
+            // Update the description text to be dynamic
+            const roiDescription = document.getElementById('roi-description');
+            if (roiDescription) {
+                roiDescription.textContent = `Based on $${(totalInvestment/1000).toFixed(0)}K seed investment at ${revenueMultiple}x revenue multiple`;
+            }
+        }
+
+        // ROI calculation variables and functions
+        const roiVariables = {
+            conservative: {
+                exitMultiple: 8,
+                timeToExit: 6,
+                dilutionRate: 0.4,
+                successProbability: 0.6
+            },
+            medium: {
+                exitMultiple: 12,
+                timeToExit: 5,
+                dilutionRate: 0.35,
+                successProbability: 0.75
+            },
+            aggressive: {
+                exitMultiple: 18,
+                timeToExit: 4,
+                dilutionRate: 0.3,
+                successProbability: 0.85
+            }
+        };
+
+        function openPopup(contentKey) {
+            const overlay = document.getElementById('popup-overlay');
+            const popupBody = document.getElementById('popup-body');
+            
+            if (popupContent[contentKey]) {
+                popupBody.innerHTML = `
+                    <h2 style="color: #a855f7; margin-bottom: 30px;">${popupContent[contentKey].title}</h2>
+                    ${popupContent[contentKey].content}
+                `;
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closePopup(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const overlay = document.getElementById('popup-overlay');
+            overlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function calculateROI() {
+            const investment = document.getElementById('investment-amount').value;
+            const aggressiveness = document.getElementById('aggressiveness').value;
+            const timeline = document.getElementById('timeline').value;
+
+            if (!investment || !aggressiveness || !timeline) {
+                alert('Please select all parameters to calculate your ROI.');
+                return;
+            }
+
+            const investmentAmount = parseInt(investment);
+            const scenario = roiVariables[aggressiveness];
+            const years = parseInt(timeline);
+
+            // Calculate ROI
+            const companyValuation = 50000000; // $50M ARR * exit multiple
+            const exitValuation = companyValuation * scenario.exitMultiple;
+            const ownershipPercentage = (investmentAmount / 2000000) * (1 - scenario.dilutionRate); // Assuming $2M pre-money
+            const grossReturn = exitValuation * ownershipPercentage;
+            const netReturn = grossReturn * scenario.successProbability;
+            const totalReturn = netReturn / investmentAmount;
+            const annualizedReturn = Math.pow(totalReturn, 1/years) - 1;
+
+            // Display results
+            const resultsDiv = document.getElementById('roi-results');
+            const gridDiv = document.getElementById('roi-grid');
+            
+            gridDiv.innerHTML = `
+                <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 2rem; font-weight: 800; color: #22c55e; margin-bottom: 10px;">$${(netReturn/1000000).toFixed(1)}M</div>
+                    <div style="font-size: 1rem; opacity: 0.8;">Expected Return</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 2rem; font-weight: 800; color: #3b82f6; margin-bottom: 10px;">${totalReturn.toFixed(1)}x</div>
+                    <div style="font-size: 1rem; opacity: 0.8;">Multiple of Investment</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 2rem; font-weight: 800; color: #a855f7; margin-bottom: 10px;">${(annualizedReturn * 100).toFixed(0)}%</div>
+                    <div style="font-size: 1rem; opacity: 0.8;">Annual Return Rate</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 2rem; font-weight: 800; color: #06b6d4; margin-bottom: 10px;">${(ownershipPercentage * 100).toFixed(2)}%</div>
+                    <div style="font-size: 1rem; opacity: 0.8;">Final Ownership</div>
+                </div>
+            `;
+
+            resultsDiv.style.display = 'block';
+        }
+
+        // Initialize calculator
+        document.addEventListener('DOMContentLoaded', function() {
+            synchronizeInputs('aduSlider', 'aduInput');
+            synchronizeInputs('monthlySlider', 'monthlyInput');
+            synchronizeInputs('retentionSlider', 'retentionInput');
+            synchronizeInputs('penetrationSlider', 'penetrationInput');
+            calculateRevenue(); // Initial calculation
+        });
+    </script>
+</body>
+</html>

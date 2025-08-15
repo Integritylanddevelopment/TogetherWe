@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherWe: Where Love Meets Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/pink.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/mauve.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/plum.css" rel="stylesheet">
+    <link href="https://unpkg.com/@radix-ui/themes@2.0.3/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #fefcfd;
+            --bg-secondary: #faf8fa;
+            --bg-accent: #f4f1f4;
+            --text-primary: #1e1623;
+            --text-secondary: #6e6975;
+            --accent-primary: var(--pink-9);
+            --accent-secondary: var(--plum-9);
+            --accent-light: var(--pink-3);
+            --border-soft: var(--mauve-6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #E6D7FF;
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at 30% 20%, var(--accent-light) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, var(--pink-2) 0%, transparent 50%);
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .story-section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .story-section:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(196, 181, 253, 0.1);
+            border: 1px solid var(--border-soft);
+            transition: all 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(196, 181, 253, 0.15);
+        }
+
+        .story-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-secondary);
+        }
+
+        .story-card p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--accent-light), var(--pink-2));
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .feature-showcase {
+            background: white;
+            border-radius: 24px;
+            padding: 60px;
+            margin: 60px 0;
+            box-shadow: 0 16px 64px rgba(196, 181, 253, 0.08);
+            border: 1px solid var(--border-soft);
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .emotional-journey {
+            background: linear-gradient(135deg, var(--pink-1), var(--plum-1));
+            border-radius: 24px;
+            padding: 60px;
+            margin: 80px 0;
+            text-align: center;
+        }
+
+        .journey-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .journey-step {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px 20px;
+            box-shadow: 0 4px 16px rgba(196, 181, 253, 0.1);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin: 0 auto 20px;
+        }
+
+        .closing-section {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+            margin-top: 80px;
+        }
+
+        .closing-section h2 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .closing-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .story-card, .feature-showcase, .emotional-journey {
+                padding: 30px 20px;
+            }
+            
+            .journey-steps {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1>TogetherWe</h1>
+                <p class="subtitle">Where artificial intelligence meets the art of love</p>
+                <p>Every relationship has its own unique fingerprint of emotions, patterns, and dreams. We built something extraordinary to help couples discover theirs.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Dream Section -->
+    <div class="story-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>A Dream Born from Real Pain</h2>
+                <p>Traditional couples therapy costs thousands and requires weeks of waiting. Meanwhile, relationships suffer in silence.</p>
+            </div>
+            
+            <div class="story-grid">
+                <div class="story-card">
+                    <h3>The Problem We Saw</h3>
+                    <p>Eight million couples need help but can't access it. Traditional therapy costs over <span class="highlight">$7,200 annually</span> and has month-long waiting lists.</p>
+                    <p>Relationships are complex, beautiful puzzles that need immediate, personalized attention—not one-size-fits-all solutions.</p>
+                </div>
+                
+                <div class="story-card">
+                    <h3>Our Vision</h3>
+                    <p>What if we could create an emotional intelligence system that understands each couple's unique dynamics? A digital therapist available 24/7 for the price of a coffee subscription.</p>
+                    <p>Not replacing human connection, but enhancing it with <span class="highlight">deep understanding</span> and personalized guidance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Heart Section -->
+    <div class="story-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Heart of Our System</h2>
+                <p>Behind every gentle suggestion and insightful observation lies a sophisticated network of emotional intelligence.</p>
+            </div>
+
+            <div class="feature-showcase">
+                <h3>Twenty Specialized Counselors, One Unified Understanding</h3>
+                <p>Imagine having twenty different therapy specialists, each an expert in their field, all working together to understand your relationship. That's exactly what we built.</p>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">💝</div>
+                        <div>
+                            <h4>Attachment & Connection</h4>
+                            <p>Understanding how you and your partner connect, what makes you feel safe, and what triggers your fears.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">🗣️</div>
+                        <div>
+                            <h4>Communication Patterns</h4>
+                            <p>Detecting the subtle ways you speak to each other and helping you find your unique language of love.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">🌱</div>
+                        <div>
+                            <h4>Growth & Healing</h4>
+                            <p>Recognizing when you're growing together and gently guiding you through difficult moments.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">🚨</div>
+                        <div>
+                            <h4>Crisis Support</h4>
+                            <p>Always watching for signs that you need immediate help, connecting you with real professionals when needed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Privacy Section -->
+    <div class="story-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Love, Your Privacy</h2>
+                <p>We believe intimate conversations deserve the highest protection.</p>
+            </div>
+
+            <div class="story-grid">
+                <div class="story-card">
+                    <h3>Sacred Boundaries</h3>
+                    <p>We treat your relationship like a precious secret. Each partner has their own private space, and we never share information between you without both of you agreeing.</p>
+                    <p>Think of it as having <span class="highlight">three separate journals</span>—his thoughts, her thoughts, and your shared story—each protected with the same care you'd give your most treasured memories.</p>
+                </div>
+                
+                <div class="story-card">
+                    <h3>Consent in Every Detail</h3>
+                    <p>Before we ever combine insights from both partners, we ask permission. Your individual growth remains yours until you're both ready to share.</p>
+                    <p>It's like having a therapist who respects that some conversations need to happen separately before they can happen together.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Intelligence Section -->
+    <div class="story-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Intelligence That Feels Human</h2>
+                <p>Our system doesn't just analyze—it understands, remembers, and grows with you.</p>
+            </div>
+
+            <div class="emotional-journey">
+                <h3>How We Learn Your Love Language</h3>
+                <p>Every couple speaks love differently. Our system learns your unique emotional vocabulary over time, becoming more intuitive with each interaction.</p>
+
+                <div class="journey-steps">
+                    <div class="journey-step">
+                        <div class="step-number">1</div>
+                        <h4>We Listen</h4>
+                        <p>Every conversation teaches us about your communication style and emotional patterns.</p>
+                    </div>
+                    
+                    <div class="journey-step">
+                        <div class="step-number">2</div>
+                        <h4>We Remember</h4>
+                        <p>Important moments, breakthroughs, and growth milestones are stored in our digital memory.</p>
+                    </div>
+                    
+                    <div class="journey-step">
+                        <div class="step-number">3</div>
+                        <h4>We Adapt</h4>
+                        <p>Our guidance becomes more personalized as we understand what works best for your relationship.</p>
+                    </div>
+                    
+                    <div class="journey-step">
+                        <div class="step-number">4</div>
+                        <h4>We Support</h4>
+                        <p>Daily insights, crisis support, and growth tracking help your love flourish.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Technical Magic Section -->
+    <div class="story-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Magic Behind the Scenes</h2>
+                <p>Complex technology working invisibly to make love feel effortless.</p>
+            </div>
+
+            <div class="story-grid">
+                <div class="story-card">
+                    <h3>A Digital Brain for Love</h3>
+                    <p>We built something like a digital brain with over <span class="highlight">377 specialized agents</span>, each one focusing on different aspects of relationships.</p>
+                    <p>Some agents focus on detecting when you're stressed, others on recognizing growth moments, and still others on knowing when to call for help.</p>
+                </div>
+                
+                <div class="story-card">
+                    <h3>Memory That Matters</h3>
+                    <p>Like human memory, our system remembers different types of information in different ways. Important emotional breakthroughs are stored permanently, while daily interactions help us understand your current state.</p>
+                    <p>It's like having a perfect memory of every meaningful conversation you've ever had.</p>
+                </div>
+                
+                <div class="story-card">
+                    <h3>Always Available Support</h3>
+                    <p>Our system never sleeps. Whether it's 3 AM anxiety or a breakthrough moment on a Sunday afternoon, we're there with personalized support.</p>
+                    <p>Emergency protocols connect you with real professionals when our digital support isn't enough.</p>
+                </div>
+                
+                <div class="story-card">
+                    <h3>Growing Smarter Together</h3>
+                    <p>Every successful intervention, every relationship milestone, and every crisis resolved helps our system become better for all couples.</p>
+                    <p>We learn from love stories while protecting each couple's privacy completely.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Impact Section -->
+    <div class="story-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Making Love Accessible</h2>
+                <p>Professional relationship support for the price of a streaming subscription.</p>
+            </div>
+
+            <div class="feature-showcase">
+                <h3>From Crisis to Connection</h3>
+                <p>Our system can detect relationship patterns that might take traditional therapy months to uncover. Early intervention means preventing small issues from becoming relationship-ending problems.</p>
+                <p>We're not trying to replace human therapists—we're trying to make sure more couples get the help they need, when they need it, at a price they can afford.</p>
+                
+                <div class="story-grid">
+                    <div class="story-card">
+                        <h3>Daily Guidance</h3>
+                        <p>Personalized insights delivered each morning, tailored to your current relationship dynamics and individual communication styles.</p>
+                    </div>
+                    
+                    <div class="story-card">
+                        <h3>Crisis Prevention</h3>
+                        <p>Early warning systems that detect harmful patterns before they become destructive, with immediate professional backup when needed.</p>
+                    </div>
+                    
+                    <div class="story-card">
+                        <h3>Growth Tracking</h3>
+                        <p>Celebrating your progress and helping you see how far you've come, even when growth feels slow or difficult.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Closing Section -->
+    <div class="closing-section">
+        <div class="container">
+            <h2>Every Love Story Deserves Support</h2>
+            <p>We believe that with the right understanding, care, and support, every relationship can flourish. TogetherWe isn't just technology—it's a love letter to love itself.</p>
+            <p>Behind every algorithm is a commitment to helping couples discover their unique path to deeper connection.</p>
+        </div>
+    </div>
+</body>
+</html>

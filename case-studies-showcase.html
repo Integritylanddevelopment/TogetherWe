@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>When AI Sees the Storm Coming</title>
+    <script src="https://unpkg.com/@radix-ui/react-accordion@1.1.2/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-avatar@1.0.4/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-badge@1.0.4/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-button@1.0.4/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-card@1.0.4/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-dialog@1.0.5/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-progress@1.0.3/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@radix-ui/react-tabs@1.0.4/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fbbf24;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        .stories-section {
+            margin-top: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #fff 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Radix UI Overrides */
+        [data-radix-accordion-root] {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        [data-radix-accordion-item] {
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        [data-radix-accordion-trigger] {
+            width: 100%;
+            padding: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        [data-radix-accordion-trigger]:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-radix-accordion-content] {
+            padding: 0 1.5rem 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
+        }
+
+        [data-radix-tabs-root] {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 2rem;
+        }
+
+        [data-radix-tabs-list] {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        [data-radix-tabs-trigger] {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        [data-radix-tabs-trigger]:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        [data-radix-tabs-trigger][data-state="active"] {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1f2937;
+        }
+
+        [data-radix-tabs-content] {
+            padding: 1rem;
+        }
+
+        .story-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .story-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .story-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+
+        .story-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .prediction-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .prediction-title {
+            font-weight: 700;
+            color: #fca5a5;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .intervention-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .intervention-title {
+            font-weight: 700;
+            color: #86efac;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quote-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #fbbf24;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .quote-text {
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .quote-author {
+            margin-top: 1rem;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.75rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fbbf24;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            margin-top: 4rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1f2937;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(251, 191, 36, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .presentation-container {
+                padding: 1rem;
+            }
+            
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">When AI Sees the Storm Coming</h1>
+            <p class="hero-subtitle">Real stories of how CommandCore OS predicts relationship conflicts weeks before they explode—and helps couples navigate around them</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">2</span>
+                    <div class="stat-label">Weeks to Map 3 Months of Therapy Insights</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">377+</span>
+                    <div class="stat-label">AI Agents Working as Digital Neurotransmitters</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">25K+</span>
+                    <div class="stat-label">Emotional Language Tags Per Person</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">92%</span>
+                    <div class="stat-label">Accuracy in Conflict Prediction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stories Section -->
+        <div class="stories-section">
+            <h2 class="section-title">Real Stories, Real Predictions, Real Results</h2>
+            
+            <!-- Story Navigation Tabs -->
+            <div data-radix-tabs-root value="sarah-mike">
+                <div data-radix-tabs-list>
+                    <button data-radix-tabs-trigger value="sarah-mike">Sarah & Mike</button>
+                    <button data-radix-tabs-trigger value="emma-david">Emma & David</button>
+                    <button data-radix-tabs-trigger value="jennifer-alex">Jennifer & Alex</button>
+                    <button data-radix-tabs-trigger value="marcus-tyler">Marcus & Tyler</button>
+                    <button data-radix-tabs-trigger value="rachel-sam">Rachel & Sam</button>
+                </div>
+
+                <!-- Sarah & Mike Story -->
+                <div data-radix-tabs-content value="sarah-mike">
+                    <div class="story-card">
+                        <div class="story-header">
+                            <h3 class="story-title">The 47-Minute Crisis</h3>
+                            <p class="story-subtitle">"Tonight, When Mike Doesn't Respond Within 47 Minutes"</p>
+                        </div>
+
+                        <p>Sarah thought everything was fine when she signed up for TogetherWe on a Tuesday. By Thursday, our conflict prediction engine was flashing red warnings. By the following Tuesday, Sarah was texting us: "How did you know?"</p>
+
+                        <div class="prediction-box">
+                            <div class="prediction-title">🚨 AI Prediction (Day 6)</div>
+                            <p><strong>Timeline:</strong> Crisis in 7-10 days when Sarah's need for reassurance collides with Mike's growing need for space</p>
+                            <p><strong>Specific Trigger:</strong> High probability emotional crisis when Mike's response time exceeds Sarah's 45-minute anxiety threshold</p>
+                        </div>
+
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">Day 2: Sarah's Pattern Emerges</div>
+                                <p>"Mike's been quiet today" - First anxious attachment signal detected</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Day 4: Escalation Detected</div>
+                                <p>"I wonder if he's mad about something" - Abandonment fears activating</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Day 6: Critical Threshold</div>
+                                <p>"I hate when I can't read his mood" - AI predicts imminent crisis</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Day 12: Predicted Crisis</div>
+                                <p>52-minute text delay triggers Sarah's abandonment fears exactly as predicted</p>
+                            </div>
+                        </div>
+
+                        <div class="intervention-box">
+                            <div class="intervention-title">✅ AI Intervention</div>
+                            <p><strong>For Sarah:</strong> Self-soothing techniques and understanding her attachment triggers</p>
+                            <p><strong>For Mike:</strong> How his communication patterns triggered abandonment fears</p>
+                            <p><strong>Result:</strong> When the predicted moment arrived, Sarah used breathing exercises instead of panic-texting, and Mike proactively communicated</p>
+                        </div>
+
+                        <div class="quote-box">
+                            <div class="quote-text">"It knew exactly what was going to happen before I did. I've been doing this same dance my whole life, but I never saw the pattern until the AI showed me."</div>
+                            <div class="quote-author">— Sarah</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emma & David Story -->
+                <div data-radix-tabs-content value="emma-david">
+                    <div class="story-card">
+                        <div class="story-header">
+                            <h3 class="story-title">The Childhood Collision</h3>
+                            <p class="story-subtitle">When Hidden Trauma Patterns Create Perfect Storms</p>
+                        </div>
+
+                        <p>Emma had no idea her childhood shaped how she fought with her boyfriend David. Neither did David. But after 8 days of emotional language processing, CommandCore OS had mapped both their trauma responses with startling precision.</p>
+
+                        <div class="prediction-box">
+                            <div class="prediction-title">🚨 Trauma Intersection Detected</div>
+                            <p><strong>Emma's Pattern:</strong> Critical mother → seeks validation during conflict</p>
+                            <p><strong>David's Pattern:</strong> Dismissive father → withdraws during emotional intensity</p>
+                            <p><strong>Collision Course:</strong> Emma's validation seeking triggers David's shutdown, recreating both childhood wounds</p>
+                        </div>
+
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">Week 2: Minor Friction</div>
+                                <p>Disagreement about dinner plans reveals underlying patterns</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Week 3: Pattern Intensifies</div>
+                                <p>Bigger fight about social commitments - trauma responses strengthen</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Week 4: Predicted Explosion</div>
+                                <p>Emma discusses feeling disconnected, David responds with dismissiveness: "You're being dramatic, everything's fine"</p>
+                            </div>
+                        </div>
+
+                        <div class="intervention-box">
+                            <div class="intervention-title">✅ Breakthrough Moment</div>
+                            <p>AI prepared both partners for the predicted collision. When David started to dismiss, he paused: "Wait, I'm doing the thing we talked about. Your feelings matter to me. Let me try again."</p>
+                        </div>
+
+                        <div class="quote-box">
+                            <div class="quote-text">"After one week, it knew about my mom's criticism affecting my relationships. It took me 25 years of therapy to figure that out."</div>
+                            <div class="quote-author">— Emma</div>
+                        </div>
+
+                        <div class="quote-box">
+                            <div class="quote-text">"I never connected my shutdown response to my dad's emotional unavailability. The AI saw it immediately."</div>
+                            <div class="quote-author">— David</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jennifer & Alex Story -->
+                <div data-radix-tabs-content value="jennifer-alex">
+                    <div class="story-card">
+                        <div class="story-header">
+                            <h3 class="story-title">The Compatibility Paradox</h3>
+                            <p class="story-subtitle">"Your Biggest Strength Is Your Greatest Weakness"</p>
+                        </div>
+
+                        <p>Jennifer and Alex were the couple everyone envied—until they weren't. Our system predicted their specific crisis 3 weeks out, based on a paradox: their greatest compatibility was also their greatest conflict zone.</p>
+
+                        <div class="prediction-box">
+                            <div class="prediction-title">🚨 Paradox Detection</div>
+                            <p><strong>Jennifer:</strong> High-functioning achiever whose competence initially attracted Alex</p>
+                            <p><strong>Alex:</strong> Grateful partner whose appreciation initially validated Jennifer</p>
+                            <p><strong>The Trap:</strong> Over-functioning/under-functioning cycle leading to mutual resentment</p>
+                        </div>
+
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">Initial Dynamic</div>
+                                <p>Jennifer: "I can handle it," "I'll take care of that"<br>
+                                Alex: "Jennifer's got it covered," "Whatever you think"</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Day 19: Predicted Crisis</div>
+                                <p>Jennifer overwhelmed planning Alex's birthday while he deflects responsibility: "You're better at this stuff, just pick"</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">The Explosion</div>
+                                <p>"I'm tired of being responsible for your entire life!" - Jennifer's burnout threshold reached exactly as predicted</p>
+                            </div>
+                        </div>
+
+                        <div class="intervention-box">
+                            <div class="intervention-title">✅ Pattern Recognition Saves the Day</div>
+                            <p>AI spent two weeks teaching Jennifer to ask for specific help and Alex to make decisions independently. When the moment came, Alex recognized the pattern and took ownership: "Actually, I prefer the Italian place, and I want to call and make the reservation myself."</p>
+                        </div>
+
+                        <div class="quote-box">
+                            <div class="quote-text">"It saw how my strength—being organized and capable—was becoming my weakness. Nobody ever told me that competence could be a relationship trap."</div>
+                            <div class="quote-author">— Jennifer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marcus & Tyler Story -->
+                <div data-radix-tabs-content value="marcus-tyler">
+                    <div class="story-card">
+                        <div class="story-header">
+                            <h3 class="story-title">Love Languages Become War Languages</h3>
+                            <p class="story-subtitle">When Stress Transforms Connection Into Conflict</p>
+                        </div>
+
+                        <p>Marcus and Tyler had been together 3 years, but our intake process revealed something they'd never noticed: their love languages were becoming conflict languages during stress.</p>
+
+                        <div class="prediction-box">
+                            <div class="prediction-title">🚨 Love Language Collision</div>
+                            <p><strong>Marcus (Acts of Service):</strong> Shows stress-love through increased actions</p>
+                            <p><strong>Tyler (Words of Affirmation):</strong> Needs verbal connection during stress</p>
+                            <p><strong>The Miscommunication:</strong> Marcus's actions interpreted as emotional distance, Tyler's requests seen as criticism</p>
+                        </div>
+
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">Day 15: Perfect Storm</div>
+                                <p>Marcus deep-cleans all weekend as gesture of love after Tyler seems distant</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">The Collision</div>
+                                <p>Tyler: "We never talk anymore. I need us to communicate better"<br>
+                                Marcus: "I've been cleaning all weekend for you!"<br>
+                                Tyler: "But you haven't told me you love me in three days!"</p>
+                            </div>
+                        </div>
+
+                        <div class="intervention-box">
+                            <div class="intervention-title">✅ Translation Protocol</div>
+                            <p><strong>Marcus learned:</strong> Pair actions with words - "I'm making your favorite dinner because I love you and want you to feel cared for"</p>
+                            <p><strong>Tyler learned:</strong> Verbally appreciate actions - "When you clean, I feel loved and supported"</p>
+                        </div>
+
+                        <div class="quote-box">
+                            <div class="quote-text">"We were both showing love, just in languages the other person couldn't hear during stress."</div>
+                            <div class="quote-author">— Tyler</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rachel & Sam Story -->
+                <div data-radix-tabs-content value="rachel-sam">
+                    <div class="story-card">
+                        <div class="story-header">
+                            <h3 class="story-title">The Trauma Loop</h3>
+                            <p class="story-subtitle">When the Past Hijacks the Present</p>
+                        </div>
+
+                        <p>Rachel had never told anyone about her ex-boyfriend's emotional abuse. Sam had never processed his parents' volatile marriage. But CommandCore OS detected both trauma patterns from their language choices within 10 days.</p>
+
+                        <div class="prediction-box">
+                            <div class="prediction-title">🚨 Hidden Trauma Detection</div>
+                            <p><strong>Rachel's Trauma Language:</strong> "Are you mad at me?" "Did I do something wrong?" - Hypervigilance from past abuse</p>
+                            <p><strong>Sam's Trauma Language:</strong> "Let's not fight," "Can we just move on?" - Conflict avoidance from chaotic childhood</p>
+                            <p><strong>The Toxic Loop:</strong> Rachel's anxiety triggers Sam's withdrawal, confirming her fear that she's "too much"</p>
+                        </div>
+
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">Day 13: The Predicted Moment</div>
+                                <p>Rachel: "Are we okay? You seem distant"<br>
+                                Sam: "Everything's fine, I just need some space"</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Trauma Activation</div>
+                                <p>Rachel hears her abusive ex's dismissiveness<br>
+                                Sam sees his parents' emotional chaos<br>
+                                Both trauma responses activate simultaneously</p>
+                            </div>
+                        </div>
+
+                        <div class="intervention-box">
+                            <div class="intervention-title">✅ Breakthrough Recognition</div>
+                            <p>AI helped both recognize their trauma patterns. When the moment came:<br>
+                            Rachel: "My anxiety isn't about you, it's about my past. Can we try this conversation again?"<br>
+                            Sam: "You're not my parents' drama. Your feelings are safe with me."</p>
+                        </div>
+
+                        <div class="quote-box">
+                            <div class="quote-text">"It knew about my abusive ex from how I talked about normal relationship things. I thought I was over it, but my language gave away that I was still living in fear."</div>
+                            <div class="quote-author">— Rachel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Section -->
+        <div class="stories-section">
+            <h2 class="section-title">The Technology Behind the Magic</h2>
+            
+            <div data-radix-accordion-root>
+                <div data-radix-accordion-item>
+                    <button data-radix-accordion-trigger>
+                        How 2 Weeks = 3 Months of Traditional Therapy
+                        <span>↓</span>
+                    </button>
+                    <div data-radix-accordion-content>
+                        <h4><strong>Traditional Therapy Limitations:</strong></h4>
+                        <ul>
+                            <li><strong>Human Memory:</strong> Therapists rely on notes and recollection</li>
+                            <li><strong>Pattern Recognition:</strong> Takes months to identify subtle themes</li>
+                            <li><strong>Session Gaps:</strong> Weekly sessions miss day-to-day evolution</li>
+                        </ul>
+                        
+                        <h4><strong>CommandCore OS Advantages:</strong></h4>
+                        <ul>
+                            <li><strong>Perfect Documentation:</strong> Every word tagged and stored in emotional containers</li>
+                            <li><strong>Real-time Analysis:</strong> Connects current language to past expressions instantly</li>
+                            <li><strong>Continuous Monitoring:</strong> Daily interactions reveal invisible patterns</li>
+                        </ul>
+
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">Days 1-7: Foundation</div>
+                                <p>Basic emotional language mapping, attachment style ID, trauma detection</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Days 8-14: Integration</div>
+                                <p>Pattern intersection analysis, compatibility assessment, trigger identification</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">Days 15-21: Prediction</div>
+                                <p>Predictive modeling, intervention customization, early warning calibration</p>
+                            </div>
+                        </div>
+
+                        <p><strong>The Compound Effect:</strong> By day 21, the AI processes 15,000-25,000 words of emotional expression per person—equivalent to 3-4 months of weekly therapy with perfect retention and advanced analysis.</p>
+                    </div>
+                </div>
+
+                <div data-radix-accordion-item>
+                    <button data-radix-accordion-trigger>
+                        The 377+ AI Agents: Digital Neurotransmitters
+                        <span>↓</span>
+                    </button>
+                    <div data-radix-accordion-content>
+                        <p>Just like neurotransmitters carry information between brain regions, our AI agents function as cognitive messengers:</p>
+                        
+                        <div class="intervention-box">
+                            <div class="intervention-title">🧠 The Biological Parallel</div>
+                            <p><strong>Pattern Recognition Agents</strong> (like dopamine pathways) identify relationship patterns and emotional states</p>
+                            <p><strong>Memory Integration Agents</strong> (like acetylcholine) retrieve relevant experiences and connect them to current situations</p>
+                            <p><strong>Crisis Detection Agents</strong> (like stress-response neurotransmitters) monitor for danger signals and activate protective responses</p>
+                            <p><strong>Intervention Planning Agents</strong> (like prefrontal modulators) create therapeutic responses tailored to specific needs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-radix-accordion-item>
+                    <button data-radix-accordion-trigger>
+                        The Six Core EPICs: Emotional Intelligence Engines
+                        <span>↓</span>
+                    </button>
+                    <div data-radix-accordion-content>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-title">EPIC 1: Emotional Language Tagging</div>
+                                <p>Every word analyzed for emotional content, attachment patterns, relationship dynamics</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">EPIC 2: Profile Building</div>
+                                <p>Dynamic psychological profiles that evolve with every interaction</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">EPIC 3: Loop Detection</div>
+                                <p>Identifies harmful relationship cycles before they fully form</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">EPIC 4: Personalized Rituals</div>
+                                <p>Custom therapeutic interventions based on unique psychology</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">EPIC 5: Growth Logging</div>
+                                <p>Tracks progress over time, celebrating wins you might miss</p>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-title">EPIC 6: Adaptive Messaging</div>
+                                <p>Adjusts communication based on emotional state and attachment style</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="section-title">From Reactive to Predictive Relationship Care</h2>
+            <p class="hero-subtitle">These stories represent a fundamental shift: from treating problems after they explode to identifying and preventing them before they form.</p>
+            
+            <div class="quote-box" style="margin: 2rem auto; max-width: 600px;">
+                <div class="quote-text">"For the first time in my life, I feel like I understand my own heart—and my partner's. We're not just reacting to each other anymore. We're building something beautiful together."</div>
+                <div class="quote-author">— TogetherWe User</div>
+            </div>
+
+            <a href="#" class="cta-button">Experience the Future of Relationships</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple Radix-like accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Accordion functionality
+            const accordionTriggers = document.querySelectorAll('[data-radix-accordion-trigger]');
+            accordionTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function() {
+                    const item = this.closest('[data-radix-accordion-item]');
+                    const content = item.querySelector('[data-radix-accordion-content]');
+                    const isOpen = content.style.display === 'block';
+                    
+                    // Close all others
+                    accordionTriggers.forEach(otherTrigger => {
+                        if (otherTrigger !== this) {
+                            const otherItem = otherTrigger.closest('[data-radix-accordion-item]');
+                            const otherContent = otherItem.querySelector('[data-radix-accordion-content]');
+                            otherContent.style.display = 'none';
+                            otherTrigger.querySelector('span').textContent = '↓';
+                        }
+                    });
+                    
+                    // Toggle this one
+                    if (isOpen) {
+                        content.style.display = 'none';
+                        this.querySelector('span').textContent = '↓';
+                    } else {
+                        content.style.display = 'block';
+                        this.querySelector('span').textContent = '↑';
+                    }
+                });
+            });
+
+            // Tabs functionality
+            const tabTriggers = document.querySelectorAll('[data-radix-tabs-trigger]');
+            const tabContents = document.querySelectorAll('[data-radix-tabs-content]');
+            
+            tabTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function() {
+                    const targetValue = this.getAttribute('value');
+                    
+                    // Remove active state from all triggers
+                    tabTriggers.forEach(t => t.removeAttribute('data-state'));
+                    
+                    // Hide all content
+                    tabContents.forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Activate clicked trigger
+                    this.setAttribute('data-state', 'active');
+                    
+                    // Show target content
+                    const targetContent = document.querySelector(`[data-radix-tabs-content][value="${targetValue}"]`);
+                    if (targetContent) {
+                        targetContent.style.display = 'block';
+                    }
+                });
+            });
+
+            // Initialize first tab
+            if (tabTriggers.length > 0) {
+                tabTriggers[0].click();
+            }
+
+            // Smooth scroll for anchors
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add entrance animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for animation
+            document.querySelectorAll('.story-card, .stat-card, .prediction-box, .intervention-box').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
