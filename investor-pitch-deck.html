@@ -498,7 +498,6 @@
         <!-- Slide 1: Title -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">01</div>
                 <h1>TogetherWe</h1>
                 <p class="subtitle">AI-Powered Couples Counseling</p>
                 <p class="tagline">Making Professional Relationship Support Accessible 24/7</p>
@@ -523,7 +522,6 @@
         <!-- Slide 2: The Problem -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">02</div>
                 <h2>The Mental Health Crisis in Relationships</h2>
             </div>
 
@@ -544,7 +542,6 @@
 
         <!-- Slide 3: Revenue Calculator -->
         <div class="slide">
-            <div class="slide-number">3</div>
             <div class="slide-title" style="text-align: center; margin-bottom: 20px; font-size: 2.5rem; color: #fff;">Revenue Calculator</div>
             <div class="slide-subtitle" style="text-align: center; color: #94a3b8; margin-bottom: 40px;">Interactive model - adjust parameters to see returns</div>
             
@@ -623,7 +620,6 @@
         <!-- Slide 4: Solution -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">04</div>
                 <h2>AI-Powered Daily Couples Therapy</h2>
             </div>
 
@@ -645,7 +641,6 @@
         <!-- Slide 5: Business Model -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">05</div>
                 <h2>Subscription-Based Revenue Model</h2>
             </div>
 
@@ -667,7 +662,6 @@
         <!-- Slide 6: Market Opportunity -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">06</div>
                 <h2>$19.7B Market Opportunity</h2>
             </div>
 
@@ -690,7 +684,6 @@
         <!-- Slide 7: Competition -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">07</div>
                 <h2>Competitive Landscape Analysis</h2>
             </div>
 
@@ -712,7 +705,6 @@
         <!-- Slide 8: Team -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">08</div>
                 <h2>Experienced Team & Advisory Board</h2>
             </div>
 
@@ -734,7 +726,6 @@
         <!-- Slide 9: Funding Request -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">09</div>
                 <h2>$250K Seed Round for Market Validation</h2>
             </div>
 
@@ -756,7 +747,6 @@
         <!-- Contact Information -->
         <div class="slide">
             <div class="slide-header">
-                <div class="slide-number">10</div>
                 <h2>Ready to Transform Relationship Healthcare</h2>
             </div>
 
@@ -1406,6 +1396,9 @@
                 popupBody.innerHTML = `
                     <h2 style="color: #a855f7; margin-bottom: 30px;">${popupContent[contentKey].title}</h2>
                     ${popupContent[contentKey].content}
+                    <div style="margin-top: 40px; text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <button onclick="closePopup()" style="background: #a855f7; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);" onmouseover="this.style.background='#9333ea'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='#a855f7'; this.style.transform='translateY(0)';">Close</button>
+                    </div>
                 `;
                 overlay.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
